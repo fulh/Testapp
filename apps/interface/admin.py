@@ -45,31 +45,34 @@ class CopyAction(BaseActionView):
 
 class PathurlAdmin(object):
 	# model = Pathurl
+    # model_icon = 'fa fa-book'
+    # model_icon = 'fa fa-book'
 
-	list_display = [
+    list_display = [
 		'id',
 		'url_name',
 		'url_path',
 	]
 
-	ordering = ("id",)
-	search_fields = ("url_name",)
-	list_filter = ["create_time"]
-	list_display_links = ('id', 'url_name', 'url_path')
-	show_detail_fields = ['url_name']
-	list_editable = ['url_path']
-	raw_id_fields = ('url_name',)
-	list_per_page = 10
+	# ordering = ("id",)
+    ordering = ("id",)
+    search_fields = ("url_name",)
+    list_filter = ["create_time"]
+    list_display_links = ('id', 'url_name', 'url_path')
+    show_detail_fields = ['url_name']
+    list_editable = ['url_path']
+    raw_id_fields = ('url_name',)
+    model_icon = 'fa fa-book'
+    list_per_page = 10
 
-	batch_fields = (
+    batch_fields = (
 		'url_name',
 		'url_path'
 	)
 
-
 class ProjectInfoAdmin(object):
 	# model = ProjectInfo
-
+	model_icon = 'fa fa-asterisk'
 	list_display = [
 		'id',
 		'product_name',
@@ -96,6 +99,7 @@ class ProjectInfoAdmin(object):
 class CaseInfoAdmin(object):
 	# model = CaseInfo
 	# inlines =[ProjectInfoAdmin]
+	model_icon = 'fa fa-quora'
 
 	list_display = [
 		'id',
@@ -123,6 +127,7 @@ class InterfaceInfoAdmin(object):
     extra = 1
     # 提供1个足够的选项行，也可以提供N个
     style = "accordion"
+    model_icon =  'fa fa-suitcase'
 
     # 折叠
 
