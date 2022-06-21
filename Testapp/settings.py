@@ -77,7 +77,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'Testapp.wsgi.application'
-
+AUTHENTICATION_BACKENDS = ['user.views.EmailBackend']
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases

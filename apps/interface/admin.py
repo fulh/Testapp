@@ -1,9 +1,47 @@
 from django.contrib import admin
 import xadmin
+from xadmin import views
 from django.utils.html import format_html
 from xadmin.layout import Main, Fieldset, Side
+from xadmin.plugins.actions import BaseActionView
+from xadmin.plugins.batch import BatchChangeAction
 
 from .models import Pathurl,ProjectInfo,CaseInfo,InterfaceInfo
+
+
+class BaseSetting(object):
+    """xadmin的基本配置"""
+    enable_themes = True      # 开启主题切换功能
+    use_bootswatch = True     # 支持切换主题
+
+xadmin.site.register(views.BaseAdminView, BaseSetting)
+
+class GlobalSettings(object):
+    """xadmin的全局配置"""
+    site_title = "测试后台管理系统"   # 设置站点标题
+    site_footer = "测试用例管理"     # 设置站点的页脚
+    menu_style = "accordion"    # 设置菜单折叠，在左侧，默认的
+    # 设置models的全局图标, UserProfile, Sports 为表名
+    # global_search_models = [UserProfile, Sports]
+    # global_models_icon = {
+    #     UserProfile: "glyphicon glyphicon-user", Sports: "fa fa-cloud"
+
+xadmin.site.register(views.CommAdminView, GlobalSettings)
+
+class CopyAction(BaseActionView):
+    # 添加复制动作
+
+    action_name = "copy_data"
+    description = "复制所选的 %(verbose_name_plural)s"
+    model_perm = 'change'
+    icon = 'fa fa-facebook'
+
+    def do_action(self, queryset):
+        for qs in queryset:
+            qs.id = None
+            # 先让这条数据的id为空
+            qs.save()
+        return None
 
 class PathurlAdmin(object):
 	# model = Pathurl
@@ -90,7 +128,7 @@ class InterfaceInfoAdmin(object):
 
     def update_button(self, obj):
         # 修改按钮
-        button_html = '<a class="icon fa fa-edit" style="color: green" href="/admin/interface/interfaceinfo/%s/update/">修改</a>' % obj.id
+        button_html = '<a class="icon fa fa-edit" style="color: green" href="/xadmin/interface/interfaceinfo/%s/update/">修改</a>' % obj.id
         return format_html(button_html)
 
     update_button.short_description = '<span style="color: green">修改</span>'
@@ -98,7 +136,7 @@ class InterfaceInfoAdmin(object):
 
     def delete_button(self, obj):
         # 删除按钮
-        button_html = '<a class="icon fa fa-times" style="color: blue" href="/admin/interface/interfaceinfo/%s/delete/">删除</a>' % obj.id
+        button_html = '<a class="icon fa fa-times" style="color: blue" href="/xadmin/interface/interfaceinfo/%s/delete/">删除</a>' % obj.id
         return format_html(button_html)
 
     delete_button.short_description = '<span style="color: blue">删除</span>'
@@ -137,16 +175,16 @@ class InterfaceInfoAdmin(object):
         'body_type',
         'request_body',
         'expected_result',
-        'response_assert',
-        'wait_time',
+        # 'response_assert',
+        # 'wait_time',
         'regular_expression',
-        'regular_variable',
-        'regular_template',
-        'response_code',
-        'actual_result',
+        # 'regular_variable',
+        # 'regular_template',
+        # 'response_code',
+        # 'actual_result',
         'pass_status',
-        'create_time',
-        'update_time',
+        # 'create_time',
+        # 'update_time',
         'update_button',
         'delete_button',
     ]
@@ -178,6 +216,8 @@ class InterfaceInfoAdmin(object):
         'regular_variable',
         'regular_template',
     )
+    actions = [CopyAction,BatchChangeAction]
+    # 列表页面，添加复制动作与批量修改动作
 
 
 
