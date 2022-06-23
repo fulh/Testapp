@@ -125,9 +125,11 @@ def case_test2(request):
 		# 实际的响应代码
 		result_text = response.text
 		# 实际的响应文本
+		print(response.headers)
+		print(requests.utils.dict_from_cookiejar(response.cookies))
 		expect_error = "接口请求失败，请检查拼写是否正确！"
-
-		if result_code == 404:
+		print(result_text)
+		if result_code == 200:
 			if response_assert == "包含":
 				update_interface_info(case_id, "response_code", result_code)
 				# 插入响应代码
