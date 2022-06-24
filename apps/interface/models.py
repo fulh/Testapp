@@ -187,3 +187,26 @@ class InterfaceInfo(models.Model):
 
     def __str__(self):
         return self.case_name
+
+
+class CaseSuiteRecord(models.Model):
+    id = models.AutoField(primary_key=True)
+    case_suite_record = models.ForeignKey(CaseInfo, on_delete=models.CASCADE, verbose_name='测试用例组')
+    test_case = models.ForeignKey(InterfaceInfo, on_delete=models.CASCADE, verbose_name='测试用例')
+    request_data = models.CharField('请求体', max_length=1024, null=True)
+    response_code = models.IntegerField(verbose_name="响应代码", blank=True, null=True)
+    # 响应代码
+    actual_result = models.TextField(verbose_name="实际结果", blank=True, null=True)
+    # 实际结果
+    pass_status = models.BooleanField(verbose_name="是否通过", blank=True, null=True)
+    execute_total_time = models.CharField('执行耗时', max_length=1024, null=True)
+    create_time = models.DateTimeField(auto_now_add=True, blank=True, null=True, verbose_name="创建时间")
+
+    class Meta:
+        db_table = 'Case_Suite'
+
+        verbose_name = '测试结果'
+        verbose_name_plural = "测试结果"
+
+    def __str__(self):
+        return self.case_name

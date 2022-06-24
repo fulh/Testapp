@@ -1,4 +1,8 @@
 from django.contrib import admin
+import re
+import demjson
+from time import sleep
+
 import xadmin
 from xadmin import views
 from django.utils.html import format_html
@@ -6,7 +10,8 @@ from xadmin.layout import Main, Fieldset, Side
 from xadmin.plugins.actions import BaseActionView
 from xadmin.plugins.batch import BatchChangeAction
 
-from .models import Pathurl,ProjectInfo,CaseInfo,InterfaceInfo
+from .models import Pathurl,ProjectInfo,CaseInfo,InterfaceInfo,CaseSuiteRecord
+from .views import request_case
 
 
 class BaseSetting(object):
@@ -96,6 +101,7 @@ class ProjectInfoAdmin(object):
 	# 	'url_path'
 	# )
 
+
 class CaseInfoAdmin(object):
 	# model = CaseInfo
 	# inlines =[ProjectInfoAdmin]
@@ -122,6 +128,128 @@ class CaseInfoAdmin(object):
 	# 	'url_name',
 	# 	'url_path'
 	# )
+
+	def update_interface_info(self, case_id, field, value):
+		field_value = {field: value}
+		InterfaceInfo.objects.filter(id=case_id).update(**field_value)
+
+	def create_case_info(self,*args,**kwargs):
+		CaseSuiteRecord.objects.create(**kwargs)
+
+	def make_case(self, request, queryset):
+		global regular_result
+		regular_result = {}
+
+		for a in queryset.values():
+			data_object = CaseInfo.objects.get(id=a['id']).groups.values().order_by("id")
+
+			data_list = list(data_object)
+
+			for item in data_list:
+				case_id = item["id"]
+				request_mode = item["request_mode"]
+				interface_url = item["interface_url"]
+				body_type = item["body_type"]
+				request_body = item["request_body"]
+				request_head = item["request_head"]
+				request_parameter = item["request_parameter"]
+				expected_result = item["expected_result"]
+				response_assert = item["response_assert"]
+				regular_expression = item["regular_expression"]
+				regular_variable = item["regular_variable"]
+				regular_template = item["regular_template"]
+				# actual_result = item["actual_result"]
+				wait_time = item["wait_time"]
+				# 获取列表里面的字典的值
+				# old = "${" + regular_variable + "}"
+				# ${变量名} = ${ + 变量名 + }
+				if "$" in interface_url:
+					temp = "".join(re.findall(r'\w+', re.findall(r'{\w+', interface_url)[0]))
+					newtemp = regular_result[temp]
+					interface_url = interface_url.replace("${" + temp + "}", newtemp)
+				print(interface_url)
+				# replace(old, new)把字符串中的旧字符串替换成新字符串
+				# 即把正则表达式提取的值替换进去
+				# elif "$" in request_parameter:
+				# 	request_parameter = request_parameter.replace(old, regular_result[regular_variable])
+				# elif "$" in request_head:
+				# 	request_head = request_head.replace(old, regular_result[regular_variable])
+				# elif "$" in request_body:
+				# 	request_body = request_body.replace(old, regular_result[regular_variable])
+				# elif "$" in expected_result:
+				# 	expected_result = expected_result.replace(old, regular_result[regular_variable])
+				if body_type == "x-www-form-urlencoded":
+					pass
+				elif body_type == "json":
+					request_body = demjson.decode(request_body)
+				# 等价于json.loads()反序列化
+				response = request_case(request_mode, interface_url, request_body, request_head, request_parameter)
+				if regular_expression == "开启" and regular_variable is not None:
+					# 如果正则表达式开启，并且变量名不为空
+					regular_result[regular_variable] = re.findall(regular_template, response.text)[0]
+				# re.findall(正则表达式模板, 某个接口的实际结果)
+				# 返回一个符合规则的list，取第1个
+				# 即为正则表达式提取的结果
+
+				result_code = response.status_code
+				# 实际的响应代码
+				result_text = response.text
+				# 实际的响应文本
+				expect_error = "接口请求失败，请检查拼写是否正确！"
+
+				# if result_code == 404:
+				# 	if response_assert == "包含":
+				# 		self.update_interface_info(case_id, "response_code", result_code)
+				# 		# 插入响应代码
+				# 		self.update_interface_info(case_id, "actual_result", result_text)
+				# 		# 插入实际结果
+				# 		if expected_result in result_text:
+				# 			self.update_interface_info(case_id, "pass_status", 1)
+				# 		# 插入通过状态
+				# 		else:
+				# 			self.update_interface_info(case_id, "pass_status", 0)
+				# 	# 插入不通过状态
+				# 	elif response_assert == "相等":
+				# 		self.update_interface_info(case_id, "response_code", result_code)
+				# 		self.update_interface_info(case_id, "actual_result", result_text)
+				# 		if expected_result == result_text:
+				# 			self.update_interface_info(case_id, "pass_status", 1)
+				# 		else:
+				# 			self.update_interface_info(case_id, "pass_status", 0)
+				# else:
+				# 	self.update_interface_info(case_id, "response_code", result_code)
+				# 	self.update_interface_info(case_id, "actual_result", expect_error)
+				# 	self.update_interface_info(case_id, "pass_status", 0)
+				print(int(a['id']))
+				result = {'case_suite_record_id':int(a['id']), 'test_case_id': case_id, 'request_data': request_body,'response_code': result_code, 'actual_result': result_text, 'execute_total_time': response.elapsed}
+				if result_code == 200:
+					if response_assert == "包含":
+						if expected_result in result_text:
+							result['pass_status'] = 1
+							self.create_case_info(result)
+						# 插入通过状态
+						else:
+							result['pass_status'] = 0
+							self.create_case_info(result)
+					# 插入不通过状态
+					elif response_assert == "相等":
+						if expected_result == result_text:
+							result['pass_status'] = 1
+						else:
+							result['pass_status'] = 0
+				else:
+					result['pass_status'] = 0
+				self.create_case_info(**result)
+				sleep(wait_time)
+
+
+	make_case.short_description = "选择执行测试用例"
+	actions = [CopyAction, make_case]
+
+
+	# 列表页面，添加复制动作与批量修改动作
+
+
 class InterfaceInfoAdmin(object):
     model = InterfaceInfo
     extra = 1
@@ -130,6 +258,10 @@ class InterfaceInfoAdmin(object):
     model_icon =  'fa fa-suitcase'
 
     # 折叠
+    def update_interface_info(self,case_id, field, value):
+        field_value = {field: value}
+        InterfaceInfo.objects.filter(id=case_id).update(**field_value)
+
 
     def update_button(self, obj):
         # 修改按钮
@@ -221,9 +353,97 @@ class InterfaceInfoAdmin(object):
         'regular_variable',
         'regular_template',
     )
-    actions = [CopyAction,BatchChangeAction]
-    # 列表页面，添加复制动作与批量修改动作
 
+    def make_published(self, request, queryset):
+        print(queryset)
+        global regular_result
+        regular_result = {}
+        data_list = list(queryset.values().order_by("id"))
+        print(data_list)
+        # 把QuerySet对象转换成列表
+        for item in data_list:
+            case_id = item["id"]
+            request_mode = item["request_mode"]
+            interface_url = item["interface_url"]
+            body_type = item["body_type"]
+            request_body = item["request_body"]
+            request_head = item["request_head"]
+            request_parameter = item["request_parameter"]
+            expected_result = item["expected_result"]
+            response_assert = item["response_assert"]
+            regular_expression = item["regular_expression"]
+            regular_variable = item["regular_variable"]
+            regular_template = item["regular_template"]
+            # actual_result = item["actual_result"]
+            wait_time = item["wait_time"]
+            # 获取列表里面的字典的值
+            # old = "${" + regular_variable + "}"
+            # ${变量名} = ${ + 变量名 + }
+            if "$" in interface_url:
+                temp = "".join(re.findall(r'\w+', re.findall(r'{\w+', interface_url)[0]))
+                newtemp = regular_result[temp]
+                interface_url = interface_url.replace("${" + temp + "}", newtemp)
+            print(interface_url)
+            # replace(old, new)把字符串中的旧字符串替换成新字符串
+            # 即把正则表达式提取的值替换进去
+            # elif "$" in request_parameter:
+            # 	request_parameter = request_parameter.replace(old, regular_result[regular_variable])
+            # elif "$" in request_head:
+            # 	request_head = request_head.replace(old, regular_result[regular_variable])
+            # elif "$" in request_body:
+            # 	request_body = request_body.replace(old, regular_result[regular_variable])
+            # elif "$" in expected_result:
+            # 	expected_result = expected_result.replace(old, regular_result[regular_variable])
+            if body_type == "x-www-form-urlencoded":
+                pass
+            elif body_type == "json":
+                request_body = demjson.decode(request_body)
+            # 等价于json.loads()反序列化
+            response = request_case(request_mode,interface_url,request_body,request_head,request_parameter)
+            print("请求时长" + str(response.elapsed))
+            if regular_expression == "开启" and regular_variable is not None:
+                # 如果正则表达式开启，并且变量名不为空
+                regular_result[regular_variable] = re.findall(regular_template, response.text)[0]
+            # re.findall(正则表达式模板, 某个接口的实际结果)
+            # 返回一个符合规则的list，取第1个
+            # 即为正则表达式提取的结果
+
+
+            result_code = response.status_code
+            # 实际的响应代码
+            result_text = response.text
+            # 实际的响应文本
+            expect_error = "接口请求失败，请检查拼写是否正确！"
+
+            if result_code == 200:
+                if response_assert == "包含":
+                    self.update_interface_info(case_id, "response_code", result_code)
+                    # 插入响应代码
+                    self.update_interface_info(case_id, "actual_result", result_text)
+                    # 插入实际结果
+                    if expected_result in result_text:
+                        self.update_interface_info(case_id, "pass_status", 1)
+                    # 插入通过状态
+                    else:
+                        self.update_interface_info(case_id, "pass_status", 0)
+                # 插入不通过状态
+                elif response_assert == "相等":
+                    self.update_interface_info(case_id, "response_code", result_code)
+                    self.update_interface_info(case_id, "actual_result", result_text)
+                    if expected_result == result_text:
+                        self.update_interface_info(case_id, "pass_status", 1)
+                    else:
+                        self.update_interface_info(case_id, "pass_status", 0)
+            else:
+                self.update_interface_info(case_id, "response_code", result_code)
+                self.update_interface_info(case_id, "actual_result", expect_error)
+                self.update_interface_info(case_id, "pass_status", 0)
+
+            sleep(wait_time)
+
+    make_published.short_description = "选择通过"
+    actions = [CopyAction,make_published]
+    # 列表页面，添加复制动作与批量修改动作
 
 
 

@@ -155,3 +155,13 @@ def case_test2(request):
 
 		sleep(wait_time)
 	return render(request, "index.html")
+
+def request_case(request_mode,interface_url,request_body,request_head,request_parameter):
+	response = requests.request(
+		request_mode,
+		interface_url,
+		data=request_body,
+		headers=demjson.decode(request_head),
+		params=demjson.decode(request_parameter)
+	)
+	return response
