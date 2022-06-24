@@ -220,23 +220,24 @@ class CaseInfoAdmin(object):
 				# 	self.update_interface_info(case_id, "response_code", result_code)
 				# 	self.update_interface_info(case_id, "actual_result", expect_error)
 				# 	self.update_interface_info(case_id, "pass_status", 0)
-				print(int(a['id']))
-				result = {'case_suite_record_id':int(a['id']), 'test_case_id': case_id, 'request_data': request_body,'response_code': result_code, 'actual_result': result_text, 'execute_total_time': response.elapsed}
-				if result_code == 200:
+				result = {'case_suite_record_id':int(a['id']), 'test_case_id': case_id, 'request_data': request_body,'response_code': result_code, 'actual_result': result_text, 'execute_total_time': response.elapsed.microseconds}
+				if result_code == 404:
 					if response_assert == "包含":
 						if expected_result in result_text:
 							result['pass_status'] = 1
-							self.create_case_info(result)
+							self.create_case_info(**result)
 						# 插入通过状态
 						else:
 							result['pass_status'] = 0
-							self.create_case_info(result)
+							self.create_case_info(**result)
 					# 插入不通过状态
 					elif response_assert == "相等":
 						if expected_result == result_text:
 							result['pass_status'] = 1
+							self.create_case_info(**result)
 						else:
 							result['pass_status'] = 0
+							self.create_case_info(**result)
 				else:
 					result['pass_status'] = 0
 				self.create_case_info(**result)
@@ -445,9 +446,55 @@ class InterfaceInfoAdmin(object):
     actions = [CopyAction,make_published]
     # 列表页面，添加复制动作与批量修改动作
 
+class CaseSuiteRecordAdmin(object):
+	model = CaseSuiteRecord
+	extra = 1
+	# 提供1个足够的选项行，也可以提供N个
+	style = "accordion"
+	model_icon = 'fa fa-etsy'
+
+	list_display = [
+		# 'id',
+		'case_suite_record',
+		'test_case',
+		'request_data',
+		'response_code',
+		'actual_result',
+		'pass_status',
+		'execute_total_time',
+		'create_time',
+	]
+	# 排序
+	ordering = ("-id",)
+	# 可以通过搜索框搜索的字段名称
+	search_fields = ("case_suite_record","test_case","pass_status")
+	# 可以进行过滤操作的列
+	list_filter = ["case_suite_record"]
+	show_detail_fields = ['response_code']
+	readonly_fields = ["case_suite_record","test_case"]
+	# raw_id_fields = ('case_group',)
+	list_per_page = 10
+
+	def has_add_permission(self):
+		""" 取消后台添加附件功能 """
+
+		return False
+
+	def has_delete_permission(self, obj=None):
+		""" 取消后台删除附件功能 """
+
+		return False
+
+	def save_model(self, obj, form, change):
+		""" 取消后台编辑附件功能 """
+
+		return False
+
+
 
 
 xadmin.site.register(Pathurl, PathurlAdmin)
 xadmin.site.register(ProjectInfo, ProjectInfoAdmin)
 xadmin.site.register(CaseInfo, CaseInfoAdmin)
 xadmin.site.register(InterfaceInfo, InterfaceInfoAdmin)
+xadmin.site.register(CaseSuiteRecord, CaseSuiteRecordAdmin)

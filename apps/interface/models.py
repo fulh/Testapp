@@ -202,6 +202,8 @@ class CaseSuiteRecord(models.Model):
     execute_total_time = models.CharField('执行耗时', max_length=1024, null=True)
     create_time = models.DateTimeField(auto_now_add=True, blank=True, null=True, verbose_name="创建时间")
 
+
+
     class Meta:
         db_table = 'Case_Suite'
 
@@ -209,4 +211,4 @@ class CaseSuiteRecord(models.Model):
         verbose_name_plural = "测试结果"
 
     def __str__(self):
-        return self.case_name
+        return str(self.response_code)
