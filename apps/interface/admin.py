@@ -140,6 +140,9 @@ class CaseInfoAdmin(object):
 		global regular_result
 		regular_result = {}
 
+		new = {"new_case": 0}
+		CaseSuiteRecord.objects.all().update(**new)
+
 		for a in queryset.values():
 			data_object = CaseInfo.objects.get(id=a['id']).groups.values().order_by("id")
 
@@ -220,8 +223,12 @@ class CaseInfoAdmin(object):
 				# 	self.update_interface_info(case_id, "response_code", result_code)
 				# 	self.update_interface_info(case_id, "actual_result", expect_error)
 				# 	self.update_interface_info(case_id, "pass_status", 0)
-				result = {'case_suite_record_id':int(a['id']), 'test_case_id': case_id, 'request_data': request_body,'response_code': result_code, 'actual_result': result_text, 'execute_total_time': response.elapsed.microseconds}
-				if result_code == 404:
+				result = {'case_suite_record_id':int(a['id']), 'test_case_id': case_id, 'request_data': request_body,
+				          'response_code': result_code, 'actual_result': result_text,'interface_url':interface_url,
+				          "request_parameter":request_parameter,"request_body":request_body,"new_case":1,
+				          'execute_total_time': response.elapsed.total_seconds()}
+
+				if result_code == 200:
 					if response_assert == "包含":
 						if expected_result in result_text:
 							result['pass_status'] = 1
@@ -240,7 +247,7 @@ class CaseInfoAdmin(object):
 							self.create_case_info(**result)
 				else:
 					result['pass_status'] = 0
-				self.create_case_info(**result)
+					self.create_case_info(**result)
 				sleep(wait_time)
 
 
@@ -487,6 +494,10 @@ class CaseSuiteRecordAdmin(object):
 
 	def save_model(self, obj, form, change):
 		""" 取消后台编辑附件功能 """
+
+		return False
+
+	def has_change_permission(self, obj=None):
 
 		return False
 

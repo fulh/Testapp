@@ -196,10 +196,17 @@ class CaseSuiteRecord(models.Model):
     request_data = models.CharField('请求体', max_length=1024, null=True)
     response_code = models.IntegerField(verbose_name="响应代码", blank=True, null=True)
     # 响应代码
+    interface_url = models.CharField(null=True,max_length=255, verbose_name="接口地址", help_text="请输入接口地址")
+    # 接口地址
+    request_parameter = models.TextField(verbose_name="请求参数", blank=True, null=True,default="")
+    #请求参数
+    request_body = models.TextField(verbose_name="请求体", blank=True, null=True,default="")
+    # 请求体
     actual_result = models.TextField(verbose_name="实际结果", blank=True, null=True)
     # 实际结果
     pass_status = models.BooleanField(verbose_name="是否通过", blank=True, null=True)
-    execute_total_time = models.CharField('执行耗时', max_length=1024, null=True)
+    execute_total_time = models.CharField('执行耗时(秒)', max_length=1024, null=True)
+    new_case = models.BooleanField(verbose_name="最新", blank=True, null=True)
     create_time = models.DateTimeField(auto_now_add=True, blank=True, null=True, verbose_name="创建时间")
 
 
@@ -212,3 +219,24 @@ class CaseSuiteRecord(models.Model):
 
     def __str__(self):
         return str(self.response_code)
+
+
+class ChartsBug(models.Model):
+
+	class Meta:
+		verbose_name = u"缺陷统计"
+		verbose_name_plural = verbose_name
+
+	def __unicode__(self):
+		return self.Meta.verbose_name
+
+
+
+# class BarCharts(models.Model):
+#
+# 	class Meta:
+# 		verbose_name = u"缺陷统计"
+# 		verbose_name_plural = verbose_name
+#
+# 	def __unicode__(self):
+# 		return self.Meta.verbose_name
