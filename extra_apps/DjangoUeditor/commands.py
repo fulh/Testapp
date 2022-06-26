@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from . import settings as USettings
-from django.utils.six.moves.urllib.parse import urljoin
+# from django.utils.six.moves.urllib.parse import urljoin
+from urllib.parse import urlparse
 
 
 class UEditorEventHandler(object):

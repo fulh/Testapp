@@ -9,6 +9,7 @@ from django.utils.html import format_html
 from xadmin.layout import Main, Fieldset, Side
 from xadmin.plugins.actions import BaseActionView
 from xadmin.plugins.batch import BatchChangeAction
+from django.utils.safestring import mark_safe
 
 from .models import Pathurl,ProjectInfo,CaseInfo,InterfaceInfo,CaseSuiteRecord
 from .views import request_case
@@ -466,10 +467,11 @@ class CaseSuiteRecordAdmin(object):
 		'test_case',
 		'request_data',
 		'response_code',
-		'actual_result',
+		# 'actual_result',
 		'pass_status',
 		'execute_total_time',
 		'create_time',
+		'show_intro',
 	]
 	# 排序
 	ordering = ("-id",)
@@ -481,6 +483,57 @@ class CaseSuiteRecordAdmin(object):
 	readonly_fields = ["case_suite_record","test_case"]
 	# raw_id_fields = ('case_group',)
 	list_per_page = 10
+
+	def show_intro(self, obj):
+		# 显示简介
+		if not obj.actual_result:
+			return mark_safe('')
+		if len(obj.actual_result) < 20:
+			return mark_safe(obj.actual_result)
+
+		short_id = f'{obj._meta.db_table}_short_text_{obj.id}'
+		short_text_len = len(obj.actual_result) // 4
+		short_text = obj.actual_result[:short_text_len] + '......'
+		detail_id = f'{obj._meta.db_table}_detail_text_{obj.id}'
+		detail_text = obj.actual_result
+
+		text = """<style type="text/css">
+	                    #%s,%s {padding:10px;border:1px solid green;} 
+	              </style>
+	                <script type="text/javascript">
+
+	                function openShutManager(oSourceObj,oTargetObj,shutAble,oOpenTip,oShutTip,oShortObj){
+	                    var sourceObj = typeof oSourceObj == "string" ? document.getElementById(oSourceObj) : oSourceObj;
+	                    var targetObj = typeof oTargetObj == "string" ? document.getElementById(oTargetObj) : oTargetObj;
+	                    var shortObj = typeof oShortObj == "string" ? document.getElementById(oShortObj) : oShortObj;
+	                    var openTip = oOpenTip || "";
+	                    var shutTip = oShutTip || "";
+	                    if(targetObj.style.display!="none"){
+	                       if(shutAble) return;
+	                       targetObj.style.display="none";
+	                       shortObj.style.display="block";
+	                       if(openTip  &&  shutTip){
+	                        sourceObj.innerHTML = shutTip; 
+	                       }
+	                    } else {
+	                       targetObj.style.display="block";
+	                       shortObj.style.display="none";
+	                       if(openTip  &&  shutTip){
+	                        sourceObj.innerHTML = openTip; 
+	                       }
+	                    }
+	                    }
+	                </script>
+	                <p id="%s">%s</p>
+	                <p><a href='#a' onclick="openShutManager(this,'%s',false,'点击关闭','点击展开','%s')">点击展开</a></p>
+
+	                <p id="%s" style="display:none">
+	                   %s
+	                </p>
+	                """ % (short_id, detail_id, short_id, short_text, detail_id, short_id, detail_id, detail_text)
+		return mark_safe(text)
+
+	show_intro.short_description = '实际响应结果'
 
 	def has_add_permission(self):
 		""" 取消后台添加附件功能 """
@@ -498,7 +551,7 @@ class CaseSuiteRecordAdmin(object):
 		return False
 
 	def has_change_permission(self, obj=None):
-
+		"""取消链接后的编辑权限"""
 		return False
 
 
