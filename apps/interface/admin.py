@@ -149,7 +149,7 @@ class CaseInfoAdmin(object):
 			data_object = CaseInfo.objects.get(id=a['id']).groups.values().order_by("id")
 
 			new = {"new_case": 0}
-			CaseSuiteRecord.objects.filter(id=a['id']).update(**new)
+			CaseSuiteRecord.objects.filter(case_suite_record=a['id']).update(**new)
 
 			data_list = list(data_object)
 
@@ -473,6 +473,7 @@ class CaseSuiteRecordAdmin(object):
 		'response_code',
 		# 'actual_result',
 		'pass_status',
+		'new_case',
 		'execute_total_time',
 		'create_time',
 		'show_intro',
