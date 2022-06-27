@@ -1,0 +1,49 @@
+{# 继承自xadmin中的base_site.html #}
+{% extends 'xadmin/base_site.html' %}
+
+{# 去掉标签栏 #}
+{% block content-nav %}
+
+{% endblock %}
+
+
+{% load staticfiles %}
+{% block title %}测试统计图表{% endblock %}
+
+{% block custom_bread %}
+{% endblock %}
+
+{% block content %}
+{#	<section>#}
+{#		<div class="wp">#}
+{#			<ul class="feature">#}
+{#                {% for athlete in pic_casecharts %}#}
+{#                    <li class="feature1">#}
+{#                        {{athlete| safe }}#}
+{#                    </li>#}
+{#                {% endfor %}#}
+{#			</ul>#}
+{#		</div>#}
+{#	</section>#}
+
+
+{#{% block content %}#}
+    {% for athlete in pic_casecharts %}
+        <section>
+            <div class="module">
+                <div class="wp">
+{#                    <h1>自动测试情况统计</h1>#}
+                    <div class="module1 eachmod">
+                        <div class="right group_list" id="right group_list">
+                            {{athlete|safe }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    {% endfor %}
+{% endblock %}
+{% block custom_js %}
+<script type="text/javascript" src="{% static 'js/index.js' %}"></script>
+{% endblock %}
+

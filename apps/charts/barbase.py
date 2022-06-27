@@ -1,5 +1,5 @@
 # coding=utf-8
-from pyecharts.charts import Bar, Line, Grid, Liquid
+from pyecharts.charts import Bar, Line, Grid, Liquid,Pie
 from pyecharts import options as opts
 from pyecharts.commons.utils import JsCode
 from .cultivates import modulebug
@@ -8,12 +8,14 @@ import pandas as pd
 from pyecharts.globals import SymbolType
 from .sql_util import SQLTool
 
+from django.db.models import Count
+
 import simplejson as json
 import os
 import django
 
 from . import unitbar
-
+from interface.models import CaseSuiteRecord,CaseInfo
 # os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'article_blog.settings')
 # django.setup()
 
@@ -508,5 +510,35 @@ def bugTrend_bar(bugTrend):
 		)
 
 	)
+	print(c)
+	return c
 
+
+def case_pie(bugTrend):
+	pic_case = list(CaseSuiteRecord.objects.filter(new_case=1, case_suite_record_id=bugTrend).values("pass_status").annotate(
+		sum_case=Count("pass_status")).all())
+
+	case_list =[]
+	for case in pic_case:
+		if case['pass_status'] == False :
+			pas = ("通过",case['sum_case'])
+			case_list.append(pas)
+		elif case['pass_status'] == True :
+			Fail = ("不通过", case['sum_case'])
+			case_list.append(Fail)
+
+
+	c = (
+		Pie()
+			.add(
+			"",
+			case_list,
+			# center=["35%", "50%"],
+		)
+			.set_global_opts(
+			title_opts=opts.TitleOpts(title=CaseInfo.objects.filter(id=bugTrend).values('case_group_name')[0]['case_group_name']),
+			# legend_opts=opts.LegendOpts(pos_left="45%"),
+		)
+			.set_series_opts(label_opts=opts.LabelOpts(formatter="{b}: {c}"))
+	)
 	return c

@@ -2,12 +2,14 @@ import xadmin
 from xadmin import views
 from .sql_util import SQLTool
 from xadmin.views.base import CommAdminView
+from django.db.models import Count
 
 
-
-from .barbase import bar_base, charts_base, bar_test, bar_Liquid, bar_two, progress_bar,bugTrend_bar
-from .models import Progress,BarCharts
+from interface.models import CaseSuiteRecord
+from .barbase import bar_base, charts_base, bar_test, bar_Liquid, bar_two, progress_bar,bugTrend_bar,case_pie
+from .models import Progress,BarCharts,CaseapiCharts
 from charts import sqlfile
+
 
 
 class ProgressAdmin(object):
@@ -90,5 +92,26 @@ class BarChartsAdmin(object):
 		return context
 
 
+class CaseapiChartsAdmin(object):
+	object_list_template = "case_apicharts.html"
+	model_icon = 'fa fa-arrows'
+
+
+
+	def get_context(self):
+		context = CommAdminView.get_context(self)
+		case_suite_id = CaseSuiteRecord.objects.filter(new_case=1).distinct().values("case_suite_record_id")
+		casecharts = []
+		for case_id in case_suite_id:
+			pic_casecharts	= case_pie(case_id['case_suite_record_id']).render_embed()
+			print(pic_casecharts)
+			casecharts.append(pic_casecharts)
+		for a in casecharts:
+			print("循环取值",a)
+		context.update(
+			{"pic_casecharts":casecharts}
+		)
+		return context
+xadmin.site.register(CaseapiCharts,CaseapiChartsAdmin)
 xadmin.site.register(Progress, ProgressAdmin)
 xadmin.site.register(BarCharts, BarChartsAdmin)

@@ -20,3 +20,13 @@ class BarCharts(models.Model):
 
 	def __unicode__(self):
 		return self.Meta.verbose_name
+
+
+class CaseapiCharts(models.Model):
+
+	class Meta:
+		verbose_name = u"自动测试统计"
+		verbose_name_plural = verbose_name
+
+	def __unicode__(self):
+		return self.Meta.verbose_name
