@@ -16,7 +16,7 @@ class ProgressAdmin(object):
 	# list_display = []
 	object_list_template = "test1.html"
 	# model_icon = 'fa fa-quora'
-	model_icon = 'fa fa-arrows'
+	model_icon = 'fa fa-line-chart'
 	# model_icon = 'fa fa-area-chart'
 	# model_icon = 'fa fa-chart'
 
@@ -94,7 +94,7 @@ class BarChartsAdmin(object):
 
 class CaseapiChartsAdmin(object):
 	object_list_template = "case_apicharts.html"
-	model_icon = 'fa fa-arrows'
+	model_icon = 'fa fa-pie-chart'
 
 
 
@@ -104,14 +104,13 @@ class CaseapiChartsAdmin(object):
 		casecharts = []
 		for case_id in case_suite_id:
 			pic_casecharts	= case_pie(case_id['case_suite_record_id']).render_embed()
-			print(pic_casecharts)
 			casecharts.append(pic_casecharts)
-		for a in casecharts:
-			print("循环取值",a)
 		context.update(
 			{"pic_casecharts":casecharts}
 		)
 		return context
+
+
 xadmin.site.register(CaseapiCharts,CaseapiChartsAdmin)
 xadmin.site.register(Progress, ProgressAdmin)
 xadmin.site.register(BarCharts, BarChartsAdmin)

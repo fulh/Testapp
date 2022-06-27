@@ -521,10 +521,10 @@ def case_pie(bugTrend):
 	case_list =[]
 	for case in pic_case:
 		if case['pass_status'] == False :
-			pas = ("通过",case['sum_case'])
+			pas = ("不通过",case['sum_case'])
 			case_list.append(pas)
 		elif case['pass_status'] == True :
-			Fail = ("不通过", case['sum_case'])
+			Fail = ("通过", case['sum_case'])
 			case_list.append(Fail)
 
 
