@@ -141,11 +141,15 @@ class CaseInfoAdmin(object):
 		global regular_result
 		regular_result = {}
 
-		new = {"new_case": 0}
-		CaseSuiteRecord.objects.all().update(**new)
+		# new = {"new_case": 0}
+		# CaseSuiteRecord.objects.all().update(**new)
 
 		for a in queryset.values():
+
 			data_object = CaseInfo.objects.get(id=a['id']).groups.values().order_by("id")
+
+			new = {"new_case": 0}
+			CaseSuiteRecord.objects.filter(id=a['id']).update(**new)
 
 			data_list = list(data_object)
 
