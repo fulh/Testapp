@@ -19,6 +19,7 @@
       <sourceFolder url="file://$MODULE_DIR$/apps/interface" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/apps/user" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/apps" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/apps/tools" isTestSource="false" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.7 (Testapp)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
