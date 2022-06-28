@@ -13,7 +13,7 @@ from django.utils.safestring import mark_safe
 
 from .models import Pathurl,ProjectInfo,CaseInfo,InterfaceInfo,CaseSuiteRecord
 from .views import request_case
-
+from tools import rep_expr
 
 class BaseSetting(object):
     """xadmin的基本配置"""
@@ -172,25 +172,33 @@ class CaseInfoAdmin(object):
 				# old = "${" + regular_variable + "}"
 				# ${变量名} = ${ + 变量名 + }
 				if "$" in interface_url:
-					temp = "".join(re.findall(r'\w+', re.findall(r'{\w+', interface_url)[0]))
-					newtemp = regular_result[temp]
-					interface_url = interface_url.replace("${" + temp + "}", newtemp)
-				print(interface_url)
+					interface_url = rep_expr(interface_url,regular_result)
+					# temp = "".join(re.findall(r'\w+', re.findall(r'{\w+', interface_url)[0]))
+					# newtemp = regular_result[temp]
+					# interface_url = interface_url.replace("${" + temp + "}", newtemp)
 				# replace(old, new)把字符串中的旧字符串替换成新字符串
 				# 即把正则表达式提取的值替换进去
-				# elif "$" in request_parameter:
+				if "$" in request_parameter:
+					request_parameter = rep_expr(request_parameter, regular_result)
 				# 	request_parameter = request_parameter.replace(old, regular_result[regular_variable])
-				# elif "$" in request_head:
+				if "$" in request_head:
+					request_head = rep_expr(request_head, regular_result)
 				# 	request_head = request_head.replace(old, regular_result[regular_variable])
-				# elif "$" in request_body:
+				if "$" in request_body:
+					request_body = rep_expr(request_body, regular_result)
 				# 	request_body = request_body.replace(old, regular_result[regular_variable])
-				# elif "$" in expected_result:
+				if "$" in expected_result:
+					expected_result = rep_expr(expected_result, regular_result)
+
 				# 	expected_result = expected_result.replace(old, regular_result[regular_variable])
+
+
 				if body_type == "x-www-form-urlencoded":
 					pass
 				elif body_type == "json":
 					request_body = demjson.decode(request_body)
 				# 等价于json.loads()反序列化
+				print("请求体替换",request_parameter)
 				response = request_case(request_mode, interface_url, request_body, request_head, request_parameter)
 				if regular_expression == "开启" and regular_variable is not None:
 					# 如果正则表达式开启，并且变量名不为空
