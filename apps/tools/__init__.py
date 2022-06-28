@@ -1,7 +1,7 @@
 import re
 import json
 # from jsonpath import jsonpath
-# from loguru import logger
+from loguru import logger
 import demjson
 from time import sleep
 
