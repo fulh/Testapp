@@ -1,12 +1,13 @@
 import xadmin
 from xadmin import views
-from .sql_util import SQLTool
+# from .sql_util import SQLTool
 from xadmin.views.base import CommAdminView
 from django.db.models import Count
 
 
 from interface.models import CaseSuiteRecord
-from .barbase import bar_base, charts_base, bar_test, bar_Liquid, bar_two, progress_bar,bugTrend_bar,case_pie
+# from .barbase import bar_base, charts_base, bar_test, bar_Liquid, bar_two, progress_bar,bugTrend_bar,case_pie
+from .barbase import  bar_Liquid, bar_two, progress_bar,bugTrend_bar,case_pie
 from .models import Progress,BarCharts,CaseapiCharts
 from charts import sqlfile
 
@@ -112,5 +113,5 @@ class CaseapiChartsAdmin(object):
 
 
 xadmin.site.register(CaseapiCharts,CaseapiChartsAdmin)
-xadmin.site.register(Progress, ProgressAdmin)
-xadmin.site.register(BarCharts, BarChartsAdmin)
+# xadmin.site.register(Progress, ProgressAdmin)
+# xadmin.site.register(BarCharts, BarChartsAdmin)

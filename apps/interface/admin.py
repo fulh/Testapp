@@ -95,17 +95,22 @@ class CasedoAction(BaseActionView):
 	icon = 'fa fa-check'
 
 	def do_action(self, queryset):
+		""""
+		定义全局变量，把每次获取的变量存在在全局变量字典中，
+		"""
 		global regular_result
 		regular_result = {}
 
 		# 循环获取queryset 对象中的列表
+		idlist = []
 		for a in queryset.values():
+			idlist.append(a['id'])
 
-			#根据获取到到的测试用例组ID，根据用例组ID修改测试结果不是最新数据
-			new = {"new_case": 0}
-			print(a['id'])
-			CaseSuiteRecord.objects.filter(test_case_id=a['id']).update(**new)
-			#把数据转换成list
+		#根据获取到到的测试用例组ID，根据用例组ID修改测试结果不是最新数据
+		new = {"new_case": 0}
+		CaseSuiteRecord.objects.filter(test_case_id__in=idlist).update(**new)
+
+		#把数据转换成list
 		data_list = list(queryset.values())
 		execute(a["case_group_id"],data_list,regular_result)
 

@@ -1,7 +1,7 @@
 import re
 import json
-from jsonpath import jsonpath
-from loguru import logger
+# from jsonpath import jsonpath
+# from loguru import logger
 import demjson
 from time import sleep
 
@@ -33,6 +33,7 @@ def create_case_info(*args, **kwargs):
 def execute(id,dic,regular_result):
 	for item in dic:
 		case_id = item["id"]
+		case_group_id =item["case_group_id"]
 		request_mode = item["request_mode"]
 		interface_url = item["interface_url"]
 		body_type = item["body_type"]
@@ -86,7 +87,7 @@ def execute(id,dic,regular_result):
 		# 实际的响应文本
 
 		# 根据结果判断，插入对应结果到测试结果列表中
-		result = {'case_suite_record_id': int(id), 'test_case_id': case_id, 'request_data': request_body,
+		result = {'case_suite_record_id': int(case_group_id), 'test_case_id': case_id, 'request_data': request_body,
 		          'response_code': result_code, 'actual_result': result_text, 'interface_url': interface_url,
 		          "request_parameter": request_parameter, "request_body": request_body, "new_case": 1,
 		          'execute_total_time': response.elapsed.total_seconds()}
