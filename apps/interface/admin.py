@@ -2,6 +2,7 @@ from django.contrib import admin
 import re
 import demjson
 from time import sleep
+import subprocess
 
 import xadmin
 from xadmin import views
@@ -10,8 +11,9 @@ from xadmin.layout import Main, Fieldset, Side
 from xadmin.plugins.actions import BaseActionView
 from xadmin.plugins.batch import BatchChangeAction
 from django.utils.safestring import mark_safe
+from django.utils.datetime_safe import datetime
 
-from .models import Pathurl, ProjectInfo, CaseInfo, InterfaceInfo, CaseSuiteRecord
+from .models import Pathurl, ProjectInfo, CaseInfo, InterfaceInfo, CaseSuiteRecord,PerformanceInfo,PerformanceResultInfo
 from .views import request_case
 from tools import rep_expr,execute
 
@@ -57,7 +59,7 @@ class CopyAction(BaseActionView):
 
 
 class CaseSuitedoAction(BaseActionView):
-	# 添加复制动作
+	# 用例组执行测试用例
 
 	action_name = "cases_do_data"
 	description = "所选的 %(verbose_name_plural)s进行测试"
@@ -87,7 +89,7 @@ class CaseSuitedoAction(BaseActionView):
 
 
 class CasedoAction(BaseActionView):
-	# 添加复制动作
+	# 用例执行测试用例
 
 	action_name = "cases_do_data"
 	description = "所选的 %(verbose_name_plural)s进行测试"
@@ -116,6 +118,43 @@ class CasedoAction(BaseActionView):
 
 
 		return None
+
+class jmeteraction(BaseActionView):
+
+	action_name = "cases_do_data"
+	description = "所选的 %(verbose_name_plural)s进行压力测试"
+	model_perm = 'change'
+	icon = 'fa fa-check'
+
+
+
+	def do_action(self, queryset):
+		jmeter = queryset.values()
+		print(list(jmeter))
+		for jt in list(jmeter):
+			id = jt["id"]
+			jmeter_script = jt["jmeter_script"]
+			sample_number = jt["sample_number"]
+			duration = jt["duration"]
+
+			prefix = re.findall("(.*).jmx", jmeter_script)[0]
+			time = datetime.now().strftime("%Y%m%d%H%M%S")
+			jmx = "media/" + jmeter_script
+			jtl = "media/" + prefix + time + ".jtl"
+			report = "media/" + prefix + time + "report"
+
+
+			command = "jmeter" + " -JthreadNumber=" + str(sample_number) + " -JcontinueTime=" + str(duration) + " -n -t " + jmx + " -l " + jtl + " -e -o " + report
+
+			subprocess.run(command, shell=True)
+
+			PerformanceResultInfo.objects.create(
+				script_result_id=id,
+				test_report=report + "/index.html",
+				jtl=jtl,
+				dashboard_report=report,)
+		return None
+
 
 
 class PathurlAdmin(object):
@@ -536,8 +575,94 @@ class CaseSuiteRecordAdmin(object):
 		return False
 
 
+class PerformanceInfoAdmin(object):
+	model = PerformanceInfo
+	extra = 1
+	# 提供1个足够的选项行，也可以提供N个
+	style = "accordion"
+	model_icon = 'fa fa-etsy'
+
+	list_display = [
+		'id',
+		'script_introduce',
+		'jmeter_script',
+		'sample_number',
+		'duration',
+		'create_time',
+	]
+	# 排序
+	ordering = ("-id",)
+	# 可以通过搜索框搜索的字段名称
+	search_fields = ("script_introduce", "jmeter_script", "sample_number")
+	# 可以进行过滤操作的列
+	list_filter = ["script_introduce","duration","jmeter_script"]
+	show_detail_fields = ['script_introduce']
+	# readonly_fields = ["case_suite_record", "test_case"]
+	# raw_id_fields = ('case_group',)
+	list_per_page = 10
+	actions = [jmeteraction]
+
+class PerformanceResultInfoAdmin(object):
+	model = PerformanceResultInfo
+	extra = 1
+	# 提供1个足够的选项行，也可以提供N个
+	style = "accordion"
+	model_icon = 'fa fa-etsy'
+
+	def chick_button(self, obj):
+		# 修改按钮
+		button_html = '<a target="_blank" href="/%s">/%s</a>' %(obj.test_report,obj.test_report)
+		# '<a class="icon fa fa-edit" style="color: green" href="/xadmin/interface/interfaceinfo/%s/update/">修改</a>' % obj.dashboard_report
+		return format_html(button_html)
+
+	chick_button.short_description = '<span style="color: green">测试报告</span>'
+	chick_button.allow_tags = True
+
+	list_display = [
+		'id',
+		'script_result',
+		'chick_button',
+		# 'test_report',
+		# 'jtl',
+		# 'dashboard_report',
+		'run_time',
+	]
+	# 排序
+	ordering = ("-id",)
+	# 可以通过搜索框搜索的字段名称
+	search_fields = ("script_result", "test_report", "dashboard_report")
+	# 可以进行过滤操作的列
+	list_filter = ["script_result","test_report"]
+	show_detail_fields = ['script_result',"test_report"]
+	# readonly_fields = ["case_suite_record", "test_case"]
+	# raw_id_fields = ('case_group',)
+	list_per_page = 10
+
+
+
+	def has_add_permission(self):
+		""" 取消后台添加附件功能 """
+
+		return False
+
+	def has_delete_permission(self, obj=None):
+		""" 取消后台删除附件功能 """
+
+		return False
+
+	def save_model(self, obj, form, change):
+		""" 取消后台编辑附件功能 """
+
+		return False
+
+	def has_change_permission(self, obj=None):
+		"""取消链接后的编辑权限"""
+		return False
+
 xadmin.site.register(Pathurl, PathurlAdmin)
 xadmin.site.register(ProjectInfo, ProjectInfoAdmin)
 xadmin.site.register(CaseInfo, CaseInfoAdmin)
 xadmin.site.register(InterfaceInfo, InterfaceInfoAdmin)
 xadmin.site.register(CaseSuiteRecord, CaseSuiteRecordAdmin)
+xadmin.site.register(PerformanceInfo, PerformanceInfoAdmin)
+xadmin.site.register(PerformanceResultInfo, PerformanceResultInfoAdmin)

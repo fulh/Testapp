@@ -243,6 +243,8 @@ class ChartsBug(models.Model):
 #
 # 	def __unicode__(self):
 # 		return self.Meta.verbose_name
+
+
 class PerformanceInfo(models.Model):
 	# 压测信息表
 

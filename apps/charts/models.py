@@ -30,3 +30,14 @@ class CaseapiCharts(models.Model):
 
 	def __unicode__(self):
 		return self.Meta.verbose_name
+
+
+
+class CaseReport(models.Model):
+
+	class Meta:
+		verbose_name = u"性能测试报告"
+		verbose_name_plural = verbose_name
+
+	def __unicode__(self):
+		return self.Meta.verbose_name
