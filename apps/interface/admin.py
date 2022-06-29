@@ -144,8 +144,8 @@ class jmeteraction(BaseActionView):
 			report = "media/" + prefix + time + "report"
 
 
-			command = "jmeter" + " -JthreadNumber=" + str(sample_number) + " -JcontinueTime=" + str(duration) + " -n -t " + jmx + " -l " + jtl + " -e -o " + report
-
+			command = "jmeter" + " -JthreadNum=" + str(sample_number) + " -Jtime=" + str(duration) + " -n -t " + jmx + " -l " + jtl + " -e -o " + report
+			print(command)
 			subprocess.run(command, shell=True)
 
 			PerformanceResultInfo.objects.create(
