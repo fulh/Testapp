@@ -77,7 +77,7 @@ class OperationLogMiddleware:
             # conn.sadd(f'api_url:{request.path}',str(time.time())+':'+log_info)
             # if conn.
             conn.sadd(f'api_url:{request.path}',json.dumps(log_redis))
-            logger.info(log_info)
+            # logger.info(log_info)
         return response
 
 
@@ -126,7 +126,7 @@ class OnlineUsersMiddleware(MiddlewareMixin):
         last_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
         request_ip = get_request_ip(request)
         # redis + django orm 实现在线用户监测
-        online_info = {'ip': request_ip, 'browser': get_request_browser(request),
+        online_info = {'ip': request_ip, 'browser': "浏览器",
                        'os': get_request_os(request), 'last_time': last_time}
         if request.user.is_authenticated:
 

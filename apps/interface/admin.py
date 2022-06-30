@@ -14,7 +14,9 @@ from django.utils.safestring import mark_safe
 from django.utils.datetime_safe import datetime
 from django.contrib import messages
 
+from charts.models import CaseapiCharts
 from .models import Pathurl, ProjectInfo, CaseInfo, InterfaceInfo, CaseSuiteRecord,PerformanceInfo,PerformanceResultInfo
+from user.models import UserProfile,IpAddre
 from .views import request_case
 from tools import rep_expr,execute
 
@@ -37,10 +39,45 @@ class GlobalSettings(object):
 	# global_search_models = [UserProfile, Sports]
 	# global_models_icon = {
 	#     UserProfile: "glyphicon glyphicon-user", Sports: "fa fa-cloud"
-
+	def get_site_menu(self):
+		return[
+			{'title':"测试结果",
+			 'icon': 'fa fa-i-cursor',
+			 'menus':[
+				 {'title':'接口测试结果','icon': 'fa fa-bug','url':self.get_model_url(CaseapiCharts, 'changelist')},
+				 {'title': '测试进度统计', 'icon': 'fa fa-bug', 'url': self.get_model_url(CaseapiCharts, 'changelist')},
+				 {'title': '缺陷统计', 'icon': 'fa fa-bug', 'url': self.get_model_url(CaseapiCharts, 'changelist')}
+			 ]
+			 },
+			{'title': "接口测试",
+			 'icon': 'fa fa-bars',
+			 'menus': [
+				 {'title': '接口URL地址', 'icon': 'fa fa-bug', 'url': self.get_model_url(Pathurl, 'changelist')},
+				 {'title': '项目列表', 'icon': 'fa fa-asterisk', 'url': self.get_model_url(ProjectInfo, 'changelist')},
+				 {'title': '用例组列表', 'icon': 'fa fa-quora', 'url': self.get_model_url(CaseInfo, 'changelist')},
+				 {'title': '用例列表', 'icon': 'fa fa-suitcase', 'url': self.get_model_url(InterfaceInfo, 'changelist')},
+				 {'title': '测试结果列表', 'icon': 'fa fa-etsy', 'url': self.get_model_url(CaseSuiteRecord, 'changelist')}
+			 ]
+			 },
+			{'title': "性能测试",
+			 'icon': 'fa fa-flash',
+			 'menus': [
+				 {'title': 'Jmeter脚本', 'icon': 'fa fa-bug', 'url': self.get_model_url(PerformanceInfo, 'changelist')},
+				 {'title': '压测结果列表', 'icon': 'fa fa-superpowers', 'url': self.get_model_url(PerformanceResultInfo, 'changelist')},
+			 ]
+			 }
+			,
+			{'title': "用户管理",
+			 'icon': 'fa-fw fa fa-user',
+			 'menus': [
+				 {'title': '用户信息', 'icon': 'fa-fw fa fa-user', 'url': self.get_model_url(UserProfile, 'changelist')},
+				 {'title': 'IP黑名单', 'icon': 'fa fa-certificate',
+				  'url': self.get_model_url(IpAddre, 'changelist')},
+			 ]
+			 }
+		]
 
 xadmin.site.register(views.CommAdminView, GlobalSettings)
-
 
 class CopyAction(BaseActionView):
 	# 添加复制动作
@@ -57,8 +94,6 @@ class CopyAction(BaseActionView):
 			qs.save()
 		messages.success(self.request, "复制成功")
 		return None
-
-
 
 class CaseSuitedoAction(BaseActionView):
 	# 用例组执行测试用例
@@ -88,8 +123,6 @@ class CaseSuitedoAction(BaseActionView):
 			execute(id,data_list,regular_result)
 		messages.success(self.request, "测试用例组执行")
 		return None
-
-
 
 class CasedoAction(BaseActionView):
 	# 用例执行测试用例
@@ -158,8 +191,6 @@ class jmeteraction(BaseActionView):
 
 		return None
 
-
-
 class PathurlAdmin(object):
 
 	list_display = [
@@ -184,7 +215,6 @@ class PathurlAdmin(object):
 		'url_path'
 	)
 
-
 class ProjectInfoAdmin(object):
 	# model = ProjectInfo
 	model_icon = 'fa fa-asterisk'
@@ -206,15 +236,7 @@ class ProjectInfoAdmin(object):
 	# raw_id_fields = ('url_name',)
 	list_per_page = 10
 
-# batch_fields = (
-# 	'url_name',
-# 	'url_path'
-# )
-
-
 class CaseInfoAdmin(object):
-	# model = CaseInfo
-	# inlines =[ProjectInfoAdmin]
 	model_icon = 'fa fa-quora'
 
 	list_display = [
@@ -277,8 +299,6 @@ class CaseInfoAdmin(object):
 	actions = [CopyAction, make_case,CaseSuitedoAction]
 
 # 列表页面，添加复制动作与批量修改动作
-
-
 class InterfaceInfoAdmin(object):
 	model = InterfaceInfo
 	extra = 1
@@ -470,8 +490,6 @@ class InterfaceInfoAdmin(object):
 
 	make_published.short_description = "执行测试用例"
 	actions = [CopyAction,CasedoAction, make_published]
-	# 列表页面，添加复制动作与批量修改动作
-
 
 class CaseSuiteRecordAdmin(object):
 	model = CaseSuiteRecord
@@ -574,13 +592,12 @@ class CaseSuiteRecordAdmin(object):
 		"""取消链接后的编辑权限"""
 		return False
 
-
 class PerformanceInfoAdmin(object):
 	model = PerformanceInfo
 	extra = 1
 	# 提供1个足够的选项行，也可以提供N个
 	style = "accordion"
-	model_icon = 'fa fa-etsy'
+	model_icon = 'fa fa-bug'
 
 	list_display = [
 		'id',
@@ -607,7 +624,7 @@ class PerformanceResultInfoAdmin(object):
 	extra = 1
 	# 提供1个足够的选项行，也可以提供N个
 	style = "accordion"
-	model_icon = 'fa fa-etsy'
+	model_icon = 'fa fa-superpowers'
 
 	def chick_button(self, obj):
 		# 修改按钮
