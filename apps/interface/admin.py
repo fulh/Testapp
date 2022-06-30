@@ -12,6 +12,7 @@ from xadmin.plugins.actions import BaseActionView
 from xadmin.plugins.batch import BatchChangeAction
 from django.utils.safestring import mark_safe
 from django.utils.datetime_safe import datetime
+from django.contrib import messages
 
 from .models import Pathurl, ProjectInfo, CaseInfo, InterfaceInfo, CaseSuiteRecord,PerformanceInfo,PerformanceResultInfo
 from .views import request_case
@@ -54,6 +55,7 @@ class CopyAction(BaseActionView):
 			qs.id = None
 			# 先让这条数据的id为空
 			qs.save()
+		messages.success(self.request, "复制成功")
 		return None
 
 
@@ -75,15 +77,16 @@ class CaseSuitedoAction(BaseActionView):
 		for a in queryset.values():
 
 			id = a['id']
-			data_object = CaseInfo.objects.get(id=id).groups.values().order_by("id")
+			data_object = CaseInfo.objects.get(id=id).groupsfu.values().order_by("id")
 
 			# 根据获取到到的测试用例组ID，根据用例组ID修改测试结果不是最新数据
 			new = {"new_case": 0}
 			CaseSuiteRecord.objects.filter(case_suite_record=id).update(**new)
 			# 把数据转换成list
 			data_list = list(data_object)
+			print(data_list)
 			execute(id,data_list,regular_result)
-
+		messages.success(self.request, "测试用例组执行")
 		return None
 
 
@@ -112,10 +115,11 @@ class CasedoAction(BaseActionView):
 		new = {"new_case": 0}
 		CaseSuiteRecord.objects.filter(test_case_id__in=idlist).update(**new)
 
+		#把获取的测试列表，按照id进行排序，不排序会找到不定义的变量
 		#把数据转换成list
-		data_list = list(queryset.values())
+		data_list = list(queryset.order_by('id').values())
 		execute(a["case_group_id"],data_list,regular_result)
-
+		messages.success(self.request, "测试用例组执行")
 		return None
 
 class jmeteraction(BaseActionView):

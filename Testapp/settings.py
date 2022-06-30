@@ -59,7 +59,7 @@ MIDDLEWARE = [
     'middleware.middleware.IpBlackListMiddleware',
     'middleware.middleware.OnlineUsersMiddleware',
     'middleware.middleware.UrlNumeber',
-    # 'middleware.middleware.OperationLogMiddleware',
+    'middleware.middleware.OperationLogMiddleware',
 
 ]
 

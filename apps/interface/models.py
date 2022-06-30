@@ -118,7 +118,7 @@ class InterfaceInfo(models.Model):
 	)
 	# 是否开启正则表达式枚举
 
-	case_group = models.ForeignKey(CaseInfo, on_delete=models.CASCADE, verbose_name="用例组", related_name="groups",
+	case_group = models.ForeignKey(CaseInfo, on_delete=models.CASCADE, verbose_name="用例组", related_name="groupsfu",
 								   help_text="请选择用例组")
 	# 外键，关联用例组id
 	case_name = models.CharField(max_length=32, verbose_name="用例名称", help_text="请输入用例名称", db_index=True)
