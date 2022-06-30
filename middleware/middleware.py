@@ -7,13 +7,12 @@ import uuid
 from django.utils.deprecation import MiddlewareMixin
 from django_redis import get_redis_connection
 from rest_framework import status
-from rest_framework.response import Response
 from django.shortcuts import render, HttpResponse
 from django.core.cache import caches
 
 from django.contrib.auth.models import User
-from zhengbang.models import OnlineUsers
-from zhengbang.utils.utils import get_request_browser, get_request_os, get_request_ip
+from user.models import OnlineUsers
+from apps.tools.utils import get_request_browser, get_request_os, get_request_ip,get_ip_address
 
 
 class OperationLogMiddleware:
@@ -129,6 +128,7 @@ class OnlineUsersMiddleware(MiddlewareMixin):
         # redis + django orm 实现在线用户监测
         online_info = {'ip': request_ip, 'browser': get_request_browser(request),
                        'os': get_request_os(request), 'last_time': last_time}
+        print(online_info)
         if request.user.is_authenticated:
 
             if conn.exists(f'online_user_{request.user.username}_{request_ip}'):
@@ -171,9 +171,9 @@ class UrlNumeber(MiddlewareMixin):
     """
     # 日志处理中间件
     def process_request(self, request):
-        path = request.path
-        if path.endswith('jsi18n/'):
-            return HttpResponse()
+        # path = request.path
+        # if path.endswith('jsi18n/'):
+        #     return HttpResponse()
 
          # 统计接口访问次数/
         conn = get_redis_connection('url_number')

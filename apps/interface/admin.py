@@ -67,13 +67,14 @@ class CaseSuitedoAction(BaseActionView):
 	icon = 'fa fa-check'
 
 	def do_action(self, queryset):
+
 		global regular_result
 		regular_result = {}
 
 		# 循环获取queryset 对象中的列表
 		for a in queryset.values():
-			id = a['id']
 
+			id = a['id']
 			data_object = CaseInfo.objects.get(id=id).groups.values().order_by("id")
 
 			# 根据获取到到的测试用例组ID，根据用例组ID修改测试结果不是最新数据
@@ -82,7 +83,6 @@ class CaseSuitedoAction(BaseActionView):
 			# 把数据转换成list
 			data_list = list(data_object)
 			execute(id,data_list,regular_result)
-
 
 		return None
 
@@ -116,7 +116,6 @@ class CasedoAction(BaseActionView):
 		data_list = list(queryset.values())
 		execute(a["case_group_id"],data_list,regular_result)
 
-
 		return None
 
 class jmeteraction(BaseActionView):
@@ -125,7 +124,6 @@ class jmeteraction(BaseActionView):
 	description = "所选的 %(verbose_name_plural)s进行压力测试"
 	model_perm = 'change'
 	icon = 'fa fa-check'
-
 
 
 	def do_action(self, queryset):
@@ -153,14 +151,12 @@ class jmeteraction(BaseActionView):
 				test_report=report + "/index.html",
 				jtl=jtl,
 				dashboard_report=report,)
+
 		return None
 
 
 
 class PathurlAdmin(object):
-	# model = Pathurl
-	# model_icon = 'fa fa-book'
-	# model_icon = 'fa fa-book'
 
 	list_display = [
 		'id',
@@ -354,7 +350,7 @@ class InterfaceInfoAdmin(object):
 		'delete_button',
 	]
 	# 排序
-	ordering = ("id",)
+	ordering = ("-id",)
 	# 可以通过搜索框搜索的字段名称
 	search_fields = ("case_name",)
 	# 可以进行过滤操作的列

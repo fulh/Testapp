@@ -55,6 +55,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_user_agents.middleware.UserAgentMiddleware',
+    'middleware.middleware.IpBlackListMiddleware',
+    'middleware.middleware.OnlineUsersMiddleware',
+    'middleware.middleware.UrlNumeber',
+    # 'middleware.middleware.OperationLogMiddleware',
+
 ]
 
 ROOT_URLCONF = 'Testapp.urls'
@@ -89,6 +95,8 @@ DATABASES = {
         'NAME': str(BASE_DIR / 'db.sqlite3'),
     }
 }
+
+
 
 
 # Password validation
@@ -140,3 +148,72 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# Redis
+REDIS_PWD = os.getenv('REDIS_PWD', 'zhengbang')
+REDIS_HOST = os.getenv('REDIS_HOST', '10.88.3.165')
+REDIS_PORT = os.getenv('REDIS_PORT', '6379')
+if REDIS_PWD:
+    REDIS_STR = f':{REDIS_PWD}@'
+else:
+    REDIS_STR = ''
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': f'redis://{REDIS_STR}{REDIS_HOST}:{REDIS_PORT}/0',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    },
+    # session
+    'session': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': f'redis://{REDIS_STR}{REDIS_HOST}:{REDIS_PORT}/1',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    },
+    # 用户信息/ip黑名单
+    'user_info': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': f'redis://{REDIS_STR}{REDIS_HOST}:{REDIS_PORT}/2',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    },
+    # 在线用户监测
+    'online_user': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': f'redis://{REDIS_STR}{REDIS_HOST}:{REDIS_PORT}/3',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    },
+    # 在线用户监测
+    'url_number': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': f'redis://{REDIS_STR}{REDIS_HOST}:{REDIS_PORT}/4',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    },
+    'Api_number': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': f'redis://{REDIS_STR}{REDIS_HOST}:{REDIS_PORT}/5',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    },
+    'IpLimit': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': f'redis://{REDIS_STR}{REDIS_HOST}:{REDIS_PORT}/6',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    },
+}
+USER_AGENTS_CACHE = 'default'
+
+EXPLORER_CONNECTIONS = { 'Default': 'default' }
+EXPLORER_DEFAULT_CONNECTION = 'default'
