@@ -1,4 +1,3 @@
-from django.contrib import admin
 import re
 import demjson
 from time import sleep
@@ -14,17 +13,18 @@ from django.utils.safestring import mark_safe
 from django.utils.datetime_safe import datetime
 from django.contrib import messages
 
-from charts.models import CaseapiCharts,BarCharts,Progress
-from .models import Pathurl, ProjectInfo, CaseInfo, InterfaceInfo, CaseSuiteRecord,PerformanceInfo,PerformanceResultInfo
-from user.models import UserProfile,IpAddre
+from charts.models import CaseapiCharts, BarCharts, Progress
+from .models import Pathurl, ProjectInfo, CaseInfo, InterfaceInfo, CaseSuiteRecord, PerformanceInfo, \
+	PerformanceResultInfo
+from user.models import UserProfile, IpAddre
 from .views import request_case
-from tools import rep_expr,execute
+from tools import rep_expr, execute
 
 
 class BaseSetting(object):
 	"""xadmin的基本配置"""
-	enable_themes = True  # 开启主题切换功能
-	use_bootswatch = True  # 支持切换主题
+	# enable_themes = True  # 开启主题切换功能
+	# use_bootswatch = True  # 支持切换主题
 
 
 xadmin.site.register(views.BaseAdminView, BaseSetting)
@@ -36,15 +36,17 @@ class GlobalSettings(object):
 	site_footer = "测试用例管理"  # 设置站点的页脚
 	menu_style = "accordion"  # 设置菜单折叠，在左侧，默认的
 	# 设置models的全局图标, UserProfile, Sports 为表名
+	apps_icons = {"charts": "fa fa-music", }
+
 	# global_search_models = [UserProfile, Sports]
 	# global_models_icon = {
 	#     UserProfile: "glyphicon glyphicon-user", Sports: "fa fa-cloud"
 	def get_site_menu(self):
-		return[
-			{'title':"测试结果",
+		return [
+			{'title': "测试结果",
 			 'icon': 'fa fa-bar-chart',
-			 'menus':[
-				 {'title':'接口测试结果','icon': 'fa fa-pie-chart','url':self.get_model_url(CaseapiCharts, 'changelist')},
+			 'menus': [
+				 {'title': '接口测试结果', 'icon': 'fa fa-pie-chart', 'url': self.get_model_url(CaseapiCharts, 'changelist')},
 				 # {'title': '测试进度统计', 'icon': 'fa fa-line-chart', 'url': self.get_model_url(BarCharts, 'changelist')},
 				 # # {'title': '缺陷统计', 'icon': 'fa fa-bug', 'url': self.get_model_url(Progress, 'changelist')},
 				 # {'title': '缺陷统计', 'icon': 'fa fa-signal', 'url': self.get_model_url(Progress, 'changelist')},
@@ -64,7 +66,8 @@ class GlobalSettings(object):
 			 'icon': 'fa fa-flash',
 			 'menus': [
 				 {'title': 'Jmeter脚本', 'icon': 'fa fa-bug', 'url': self.get_model_url(PerformanceInfo, 'changelist')},
-				 {'title': '压测结果列表', 'icon': 'fa fa-superpowers', 'url': self.get_model_url(PerformanceResultInfo, 'changelist')},
+				 {'title': '压测结果列表', 'icon': 'fa fa-superpowers',
+				  'url': self.get_model_url(PerformanceResultInfo, 'changelist')},
 			 ]
 			 }
 			,
@@ -78,10 +81,11 @@ class GlobalSettings(object):
 			 }
 		]
 
+
 xadmin.site.register(views.CommAdminView, GlobalSettings)
 
+# 在Action中添加复制动作
 class CopyAction(BaseActionView):
-	# 添加复制动作
 
 	action_name = "copy_data"
 	description = "复制所选的 %(verbose_name_plural)s"
@@ -96,8 +100,36 @@ class CopyAction(BaseActionView):
 		messages.success(self.request, "复制成功")
 		return None
 
+# 根据项目来来执行测试用例
+# class CaseSuitedoAction(BaseActionView):
+#
+# 	action_name = "cases_do_data"
+# 	description = "所选的 %(verbose_name_plural)s进行测试"
+# 	model_perm = 'change'
+# 	icon = 'fa fa-check'
+#
+# 	def do_action(self, queryset):
+# 		global regular_result
+# 		regular_result = {}
+#
+# 		# 循环获取queryset 对象中的列表
+# 		for a in queryset.values():
+# 			id = a['id']
+# 			data_object = ProjectInfo.objects.get(id=id).groupsfu.values().order_by("id")
+#
+# 			# 根据获取到到的测试用例组ID，根据用例组ID修改测试结果不是最新数据
+# 			new = {"new_case": 0}
+# 			CaseSuiteRecord.objects.filter(case_suite_record=id).update(**new)
+# 			# 把数据转换成list
+# 			data_list = list(data_object)
+# 			print(data_list)
+# 			execute(id, data_list, regular_result)
+# 		messages.success(self.request, "测试用例组执行")
+# 		return None
+
+
+# 根据用例组来执行测试用例
 class CaseSuitedoAction(BaseActionView):
-	# 用例组执行测试用例
 
 	action_name = "cases_do_data"
 	description = "所选的 %(verbose_name_plural)s进行测试"
@@ -105,13 +137,11 @@ class CaseSuitedoAction(BaseActionView):
 	icon = 'fa fa-check'
 
 	def do_action(self, queryset):
-
 		global regular_result
 		regular_result = {}
 
 		# 循环获取queryset 对象中的列表
 		for a in queryset.values():
-
 			id = a['id']
 			data_object = CaseInfo.objects.get(id=id).groupsfu.values().order_by("id")
 
@@ -121,12 +151,12 @@ class CaseSuitedoAction(BaseActionView):
 			# 把数据转换成list
 			data_list = list(data_object)
 			print(data_list)
-			execute(id,data_list,regular_result)
+			execute(id, data_list, regular_result)
 		messages.success(self.request, "测试用例组执行")
 		return None
 
+# 在用例列表中执行测试用例
 class CasedoAction(BaseActionView):
-	# 用例执行测试用例
 
 	action_name = "cases_do_data"
 	description = "所选的 %(verbose_name_plural)s进行测试"
@@ -145,24 +175,24 @@ class CasedoAction(BaseActionView):
 		for a in queryset.values():
 			idlist.append(a['id'])
 
-		#根据获取到到的测试用例组ID，根据用例组ID修改测试结果不是最新数据
+		# 根据获取到到的测试用例组ID，根据用例组ID修改测试结果不是最新数据
 		new = {"new_case": 0}
 		CaseSuiteRecord.objects.filter(test_case_id__in=idlist).update(**new)
 
-		#把获取的测试列表，按照id进行排序，不排序会找到不定义的变量
-		#把数据转换成list
+		# 把获取的测试列表，按照id进行排序，不排序会找到不定义的变量
+		# 把数据转换成list
 		data_list = list(queryset.order_by('id').values())
-		execute(a["case_group_id"],data_list,regular_result)
+		execute(a["case_group_id"], data_list, regular_result)
 		messages.success(self.request, "测试用例组执行")
 		return None
 
+# 根据Jmeter脚本列表执行jmeter性能脚本
 class jmeteraction(BaseActionView):
 
 	action_name = "cases_do_data"
 	description = "所选的 %(verbose_name_plural)s进行压力测试"
 	model_perm = 'change'
 	icon = 'fa fa-check'
-
 
 	def do_action(self, queryset):
 		jmeter = queryset.values()
@@ -179,8 +209,8 @@ class jmeteraction(BaseActionView):
 			jtl = "media/" + prefix + time + ".jtl"
 			report = "media/" + prefix + time + "report"
 
-
-			command = "jmeter" + " -JthreadNum=" + str(sample_number) + " -Jtime=" + str(duration) + " -n -t " + jmx + " -l " + jtl + " -e -o " + report
+			command = "jmeter" + " -JthreadNum=" + str(sample_number) + " -Jtime=" + str(
+				duration) + " -n -t " + jmx + " -l " + jtl + " -e -o " + report
 			print(command)
 			subprocess.run(command, shell=True)
 
@@ -188,19 +218,18 @@ class jmeteraction(BaseActionView):
 				script_result_id=id,
 				test_report=report + "/index.html",
 				jtl=jtl,
-				dashboard_report=report,)
+				dashboard_report=report, )
 
 		return None
 
-class PathurlAdmin(object):
 
+class PathurlAdmin(object):
 	list_display = [
 		'id',
 		'url_name',
 		'url_path',
 	]
 
-	# ordering = ("id",)
 	ordering = ("id",)
 	search_fields = ("url_name",)
 	list_filter = ["create_time"]
@@ -210,14 +239,13 @@ class PathurlAdmin(object):
 	raw_id_fields = ('url_name',)
 	model_icon = 'fa fa-book'
 	list_per_page = 10
-
 	batch_fields = (
 		'url_name',
 		'url_path'
 	)
 
+
 class ProjectInfoAdmin(object):
-	# model = ProjectInfo
 	model_icon = 'fa fa-asterisk'
 	list_display = [
 		'id',
@@ -237,17 +265,16 @@ class ProjectInfoAdmin(object):
 	# raw_id_fields = ('url_name',)
 	list_per_page = 10
 
+
 class CaseInfoAdmin(object):
 	model_icon = 'fa fa-quora'
 
 	list_display = [
 		'id',
-		# 'make_case',
 		'case_group_name',
 		'case_group_describe',
 		'create_time',
 		'update_time',
-		# 'case_sum',
 		'clease_sun',
 	]
 
@@ -257,16 +284,13 @@ class CaseInfoAdmin(object):
 	list_display_links = ('case_group_name', 'case_group_name')
 	show_detail_fields = ['url_name']
 	list_editable = ['case_group_name']
-	# raw_id_fields = ('url_name',)
 	list_per_page = 10
 
-	# batch_fields = (
-	# 	'url_name',
-	# 	'url_path'
-	# )
+
 	def clease_sun(self, obj):
 		# 修改按钮
-		button_html = '<a  style="color: red" href="/xadmin/interface/interfaceinfo/?_p_case_group__id__exact=%s">%s</a>' % (obj.id,obj.groupsfu.all().count())
+		button_html = '<a  style="color: red" href="/xadmin/interface/interfaceinfo/?_p_case_group__id__exact=%s">%s</a>' % (
+			obj.id, obj.groupsfu.all().count())
 		return format_html(button_html)
 
 	clease_sun.short_description = '<span style="color: green">用例数</span>'
@@ -282,7 +306,7 @@ class CaseInfoAdmin(object):
 	def create_case_info(self, *args, **kwargs):
 		CaseSuiteRecord.objects.create(**kwargs)
 
-	def make_case(self,request, queryset):
+	def make_case(self, request, queryset):
 		"""
 		param request request 请求数据
 		param queryset 是CaseInfo对象的QuerySet 对象
@@ -292,7 +316,6 @@ class CaseInfoAdmin(object):
 
 		# 循环获取queryset 对象中的列表
 		for a in queryset.values():
-
 			data_object = CaseInfo.objects.get(id=a['id']).groups.values().order_by("id")
 
 			# 根据获取到到的测试用例组ID，根据用例组ID修改测试结果不是最新数据
@@ -303,13 +326,13 @@ class CaseInfoAdmin(object):
 			# id =a['id']
 			execute(a['id'], data_list, regular_result)
 
-
-
 	make_case.short_description = "选择执行测试用例"
-	actions = [CopyAction, make_case,CaseSuitedoAction]
+	actions = [CopyAction, make_case, CaseSuitedoAction]
+
 
 # 列表页面，添加复制动作与批量修改动作
 class InterfaceInfoAdmin(object):
+
 	model = InterfaceInfo
 	extra = 1
 	# 提供1个足够的选项行，也可以提供N个
@@ -339,22 +362,18 @@ class InterfaceInfoAdmin(object):
 
 	form_layout = (
 		Main(
-			Fieldset('用例信息部分',
-			         'case_group', 'case_name'),
-			Fieldset('接口信息部分',
-			         'interface_url', 'request_mode',
+			Fieldset('用例信息部分', 'case_group', 'case_name'),
+			Fieldset('接口信息部分', 'interface_url', 'request_mode',
 			         'request_parameter', 'request_head', 'body_type',
 			         'request_body', 'expected_result', 'response_assert',
 			         'wait_time'),
 			Fieldset('正则表达式提取器',
 			         'regular_expression', 'regular_variable', 'regular_template'),
 		),
-		Side(
-			# Fieldset('响应信息部分',
-			#          'response_code', 'actual_result', 'pass_status'),
-			# Fieldset('时间部分',
-			#          'create_time', 'update_time'),
-		)
+		# Side(
+		# 	Fieldset('响应信息部分','response_code', 'actual_result', 'pass_status'),
+		# 	Fieldset('时间部分','create_time', 'update_time'),
+		# )
 	)
 	# 详情页面字段分区，请注意不是fieldsets
 
@@ -370,16 +389,8 @@ class InterfaceInfoAdmin(object):
 		'body_type',
 		'request_body',
 		'expected_result',
-		# 'response_assert',
-		# 'wait_time',
 		'regular_expression',
-		# 'regular_variable',
-		# 'regular_template',
-		# 'response_code',
-		# 'actual_result',
-		'pass_status',
-		# 'create_time',
-		# 'update_time',
+		# 'pass_status',
 		'update_button',
 		'delete_button',
 	]
@@ -388,11 +399,11 @@ class InterfaceInfoAdmin(object):
 	# 可以通过搜索框搜索的字段名称
 	search_fields = ("case_name",)
 	# 可以进行过滤操作的列
-	list_filter = ['case_group',"pass_status", "create_time"]
+	list_filter = ['case_group',"create_time"]
 	list_display_links = ('id', 'case_group', 'case_name')
 	show_detail_fields = ['case_name']
 	list_editable = ['case_name']
-	readonly_fields = ['response_code', 'actual_result', 'pass_status']
+	# readonly_fields = ['actual_result',]
 	raw_id_fields = ('case_group',)
 	list_per_page = 10
 
@@ -412,108 +423,18 @@ class InterfaceInfoAdmin(object):
 		'regular_template',
 	)
 
-	def make_published(self, request, queryset):
-
-		global regular_result
-		regular_result = {}
-		data_list = list(queryset.values().order_by("id"))
-		print(data_list)
-		# 把QuerySet对象转换成列表
-
-		for item in data_list:
-			case_id = item["id"]
-			request_mode = item["request_mode"]
-			interface_url = item["interface_url"]
-			body_type = item["body_type"]
-			request_body = item["request_body"]
-			request_head = item["request_head"]
-			request_parameter = item["request_parameter"]
-			expected_result = item["expected_result"]
-			response_assert = item["response_assert"]
-			regular_expression = item["regular_expression"]
-			regular_variable = item["regular_variable"]
-			regular_template = item["regular_template"]
-			# actual_result = item["actual_result"]
-			wait_time = item["wait_time"]
-			# 获取列表里面的字典的值
-			# old = "${" + regular_variable + "}"
-			# ${变量名} = ${ + 变量名 + }
-			if "$" in interface_url:
-				temp = "".join(re.findall(r'\w+', re.findall(r'{\w+', interface_url)[0]))
-				newtemp = regular_result[temp]
-				interface_url = interface_url.replace("${" + temp + "}", newtemp)
-			print(interface_url)
-			# replace(old, new)把字符串中的旧字符串替换成新字符串
-			# 即把正则表达式提取的值替换进去
-			# elif "$" in request_parameter:
-			# 	request_parameter = request_parameter.replace(old, regular_result[regular_variable])
-			# elif "$" in request_head:
-			# 	request_head = request_head.replace(old, regular_result[regular_variable])
-			# elif "$" in request_body:
-			# 	request_body = request_body.replace(old, regular_result[regular_variable])
-			# elif "$" in expected_result:
-			# 	expected_result = expected_result.replace(old, regular_result[regular_variable])
-			if body_type == "x-www-form-urlencoded":
-				pass
-			elif body_type == "json":
-				request_body = demjson.decode(request_body)
-			# 等价于json.loads()反序列化
-			response = request_case(request_mode, interface_url, request_body, request_head, request_parameter)
-
-			if regular_expression == "开启" and regular_variable is not None:
-				# 如果正则表达式开启，并且变量名不为空
-				regular_result[regular_variable] = re.findall(regular_template, response.text)[0]
-			# re.findall(正则表达式模板, 某个接口的实际结果)
-			# 返回一个符合规则的list，取第1个
-			# 即为正则表达式提取的结果
-
-			result_code = response.status_code
-			# 实际的响应代码
-			result_text = response.text
-			# 实际的响应文本
-			expect_error = "接口请求失败，请检查拼写是否正确！"
-
-			if result_code == 200:
-				if response_assert == "包含":
-					self.update_interface_info(case_id, "response_code", result_code)
-					# 插入响应代码
-					self.update_interface_info(case_id, "actual_result", result_text)
-					# 插入实际结果
-					if expected_result in result_text:
-						self.update_interface_info(case_id, "pass_status", 1)
-					# 插入通过状态
-					else:
-						self.update_interface_info(case_id, "pass_status", 0)
-				# 插入不通过状态
-				elif response_assert == "相等":
-					self.update_interface_info(case_id, "response_code", result_code)
-					self.update_interface_info(case_id, "actual_result", result_text)
-					if expected_result == result_text:
-						self.update_interface_info(case_id, "pass_status", 1)
-					else:
-						self.update_interface_info(case_id, "pass_status", 0)
-			else:
-				self.update_interface_info(case_id, "response_code", result_code)
-				self.update_interface_info(case_id, "actual_result", expect_error)
-				self.update_interface_info(case_id, "pass_status", 0)
-
-			sleep(wait_time)
-
-	make_published.short_description = "执行测试用例"
-	actions = [CopyAction,CasedoAction, make_published]
+	actions = [CopyAction, CasedoAction]
 
 
 class CaseSuiteRecordAdmin(object):
-
 	model = CaseSuiteRecord
 	extra = 1
 	# 提供1个足够的选项行，也可以提供N个
 	style = "accordion"
 	model_icon = 'fa fa-etsy'
 
-
 	list_display = [
-		# 'id',
+		'id',
 		'case_suite_record',
 		'test_case',
 		'request_data',
@@ -550,42 +471,34 @@ class CaseSuiteRecordAdmin(object):
 		detail_id = f'{obj._meta.db_table}_detail_text_{obj.id}'
 		detail_text = obj.actual_result
 
-
-
-		text = """<style type="text/css">
-	                    #%s,%s {padding:10px;border:1px solid green;} 
-	              </style>
-	                <script type="text/javascript">
-
-	                function openShutManager(oSourceObj,oTargetObj,shutAble,oOpenTip,oShutTip,oShortObj){
-	                    var sourceObj = typeof oSourceObj == "string" ? document.getElementById(oSourceObj) : oSourceObj;
-	                    var targetObj = typeof oTargetObj == "string" ? document.getElementById(oTargetObj) : oTargetObj;
-	                    var shortObj = typeof oShortObj == "string" ? document.getElementById(oShortObj) : oShortObj;
-	                    var openTip = oOpenTip || "";
-	                    var shutTip = oShutTip || "";
-	                    if(targetObj.style.display!="none"){
-	                       if(shutAble) return;
-	                       targetObj.style.display="none";
-	                       shortObj.style.display="block";
-	                       if(openTip  &&  shutTip){
-	                        sourceObj.innerHTML = shutTip; 
-	                       }
-	                    } else {
-	                       targetObj.style.display="block";
-	                       shortObj.style.display="none";
-	                       if(openTip  &&  shutTip){
-	                        sourceObj.innerHTML = openTip; 
-	                       }
-	                    }
-	                    }
-	                </script>
-	                <p id="%s">%s</p>
-	                <p><a href='#a' onclick="openShutManager(this,'%s',false,'点击关闭','点击展开','%s')">点击展开</a></p>
-
-	                <p id="%s" style="display:none">
-	                   %s
-	                </p>
-	                """ % (short_id, detail_id, short_id, short_text, detail_id, short_id, detail_id, detail_text)
+		text = """<style type="text/css">#%s,%s {padding:10px;border:1px solid green;}</style>
+				<script type="text/javascript">
+					function openShutManager(oSourceObj,oTargetObj,shutAble,oOpenTip,oShutTip,oShortObj){
+						var sourceObj = typeof oSourceObj == "string" ? document.getElementById(oSourceObj) : oSourceObj;
+						var targetObj = typeof oTargetObj == "string" ? document.getElementById(oTargetObj) : oTargetObj;
+						var shortObj = typeof oShortObj == "string" ? document.getElementById(oShortObj) : oShortObj;
+						var openTip = oOpenTip || "";
+						var shutTip = oShutTip || "";
+							if(targetObj.style.display!="none"){
+								if(shutAble) return;
+									targetObj.style.display="none";
+									shortObj.style.display="block";
+								if(openTip  &&  shutTip){
+									sourceObj.innerHTML = shutTip; 
+									}
+							} else {
+								targetObj.style.display="block";
+								shortObj.style.display="none";
+								if(openTip  &&  shutTip){
+									sourceObj.innerHTML = openTip; 
+									}
+								}
+						}
+				</script>
+			<p id="%s">%s</p>
+			<p><a href='#a' onclick="openShutManager(this,'%s',false,'点击关闭','点击展开','%s')">点击展开</a></p>
+			<p id="%s" style="display:none">%s</p>""" % (
+			short_id, detail_id, short_id, short_text, detail_id, short_id, detail_id, detail_text)
 		return mark_safe(text)
 
 	show_intro.short_description = '实际响应结果'
@@ -609,6 +522,7 @@ class CaseSuiteRecordAdmin(object):
 		"""取消链接后的编辑权限"""
 		return False
 
+
 class PerformanceInfoAdmin(object):
 	model = PerformanceInfo
 	extra = 1
@@ -629,12 +543,13 @@ class PerformanceInfoAdmin(object):
 	# 可以通过搜索框搜索的字段名称
 	search_fields = ("script_introduce", "jmeter_script", "sample_number")
 	# 可以进行过滤操作的列
-	list_filter = ["script_introduce","duration","jmeter_script"]
+	list_filter = ["script_introduce", "duration", "jmeter_script"]
 	show_detail_fields = ['script_introduce']
 	# readonly_fields = ["case_suite_record", "test_case"]
 	# raw_id_fields = ('case_group',)
 	list_per_page = 10
 	actions = [jmeteraction]
+
 
 class PerformanceResultInfoAdmin(object):
 	model = PerformanceResultInfo
@@ -645,8 +560,7 @@ class PerformanceResultInfoAdmin(object):
 
 	def chick_button(self, obj):
 		# 修改按钮
-		button_html = '<a target="_blank" href="/%s">/%s</a>' %(obj.test_report,obj.test_report)
-		# '<a class="icon fa fa-edit" style="color: green" href="/xadmin/interface/interfaceinfo/%s/update/">修改</a>' % obj.dashboard_report
+		button_html = '<a target="_blank" href="/%s">/%s</a>' % (obj.test_report, obj.test_report)
 		return format_html(button_html)
 
 	chick_button.short_description = '<span style="color: green">测试报告</span>'
@@ -656,9 +570,6 @@ class PerformanceResultInfoAdmin(object):
 		'id',
 		'script_result',
 		'chick_button',
-		# 'test_report',
-		# 'jtl',
-		# 'dashboard_report',
 		'run_time',
 	]
 	# 排序
@@ -666,13 +577,9 @@ class PerformanceResultInfoAdmin(object):
 	# 可以通过搜索框搜索的字段名称
 	search_fields = ("script_result", "test_report", "dashboard_report")
 	# 可以进行过滤操作的列
-	list_filter = ["script_result","test_report"]
-	show_detail_fields = ['script_result',"test_report"]
-	# readonly_fields = ["case_suite_record", "test_case"]
-	# raw_id_fields = ('case_group',)
+	list_filter = ["script_result", "test_report"]
+	show_detail_fields = ['script_result', "test_report"]
 	list_per_page = 10
-
-
 
 	def has_add_permission(self):
 		""" 取消后台添加附件功能 """
@@ -692,6 +599,7 @@ class PerformanceResultInfoAdmin(object):
 	def has_change_permission(self, obj=None):
 		"""取消链接后的编辑权限"""
 		return False
+
 
 xadmin.site.register(Pathurl, PathurlAdmin)
 xadmin.site.register(ProjectInfo, ProjectInfoAdmin)

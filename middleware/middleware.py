@@ -126,7 +126,7 @@ class OnlineUsersMiddleware(MiddlewareMixin):
         last_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
         request_ip = get_request_ip(request)
         # redis + django orm 实现在线用户监测
-        online_info = {'ip': request_ip, 'browser': "浏览器",
+        online_info = {'ip': request_ip, 'browser': get_request_browser(request),
                        'os': get_request_os(request), 'last_time': last_time}
         if request.user.is_authenticated:
 

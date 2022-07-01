@@ -56,7 +56,7 @@ class ProjectInfo(models.Model):
 
 class CaseInfo(models.Model):
 	# 用例组信息表
-
+	belong_project = models.ForeignKey(ProjectInfo,verbose_name="项目名称", on_delete=models.CASCADE)
 	case_group_name = models.CharField(max_length=32, verbose_name="用例组名称", help_text="请输入用例组名称", db_index=True)
 	# 用例组名称，并创建索引
 	case_group_describe = models.CharField(max_length=255, verbose_name="用例组描述", blank=True, null=True, default="",
@@ -170,14 +170,14 @@ class InterfaceInfo(models.Model):
 		verbose_name="正则表达式模板", default="",
 		help_text="请输入正则表达式模板")
 	# 正则表达式模板
-	response_code = models.IntegerField(
-		verbose_name="响应代码", blank=True, null=True)
-	# 响应代码
-	actual_result = models.TextField(
-		verbose_name="实际结果", blank=True, null=True)
-	# 实际结果
-	pass_status = models.BooleanField(verbose_name="是否通过", blank=True, null=True)
-	# 是否通过，1为通过，0为不通过
+	# response_code = models.IntegerField(
+	# 	verbose_name="响应代码", blank=True, null=True)
+	# # 响应代码
+	# actual_result = models.TextField(
+	# 	verbose_name="实际结果", blank=True, null=True)
+	# # 实际结果
+	# pass_status = models.BooleanField(verbose_name="是否通过", blank=True, null=True)
+	# # 是否通过，1为通过，0为不通过
 	create_time = models.DateTimeField(
 		auto_now_add=True, blank=True, null=True, verbose_name="创建时间")
 	# 创建时间

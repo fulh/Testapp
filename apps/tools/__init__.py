@@ -70,6 +70,7 @@ def execute(id,dic,regular_result):
 		# 等价于json.loads()反序列化
 
 		# 根据获取到每天测试用例，发送request请求
+		print("请求",request_parameter)
 		response = request_case(request_mode, interface_url, request_body, request_head, request_parameter)
 
 		if regular_expression == "开启" and regular_variable is not None:

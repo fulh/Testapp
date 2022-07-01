@@ -157,11 +157,17 @@ def case_test2(request):
 	return render(request, "index.html")
 
 def request_case(request_mode,interface_url,request_body,request_head,request_parameter):
+	print(request_mode)
+	print(interface_url)
+	print(request_body)
+	print(demjson.decode(request_head))
+	aa = {"username":"admin","password":"123456"}
+	print("请求体",demjson.decode(request_parameter))
 	response = requests.request(
 		request_mode,
-		interface_url,
+		url=interface_url,
 		data=request_body,
 		headers=demjson.decode(request_head),
-		params=demjson.decode(request_parameter)
+		params=aa
 	)
 	return response

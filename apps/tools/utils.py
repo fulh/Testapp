@@ -72,7 +72,6 @@ def get_request_browser(request):
     :return: 浏览器信息
     """
     family = request.user_agent.browser.family
-    print(family)
     version_string = request.user_agent.browser.version_string
     return family + ' ' + version_string
 

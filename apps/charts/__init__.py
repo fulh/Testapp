@@ -1,1 +1,1 @@
-# default_app_config = 'charts.apps.ChartsConfig'
+default_app_config = 'charts.apps.ChartsConfig'
