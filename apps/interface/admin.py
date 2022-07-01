@@ -101,31 +101,34 @@ class CopyAction(BaseActionView):
 		return None
 
 # 根据项目来来执行测试用例
-# class CaseSuitedoAction(BaseActionView):
-#
-# 	action_name = "cases_do_data"
-# 	description = "所选的 %(verbose_name_plural)s进行测试"
-# 	model_perm = 'change'
-# 	icon = 'fa fa-check'
-#
-# 	def do_action(self, queryset):
-# 		global regular_result
-# 		regular_result = {}
-#
-# 		# 循环获取queryset 对象中的列表
-# 		for a in queryset.values():
-# 			id = a['id']
-# 			data_object = ProjectInfo.objects.get(id=id).groupsfu.values().order_by("id")
-#
-# 			# 根据获取到到的测试用例组ID，根据用例组ID修改测试结果不是最新数据
-# 			new = {"new_case": 0}
-# 			CaseSuiteRecord.objects.filter(case_suite_record=id).update(**new)
-# 			# 把数据转换成list
-# 			data_list = list(data_object)
-# 			print(data_list)
-# 			execute(id, data_list, regular_result)
-# 		messages.success(self.request, "测试用例组执行")
-# 		return None
+class ProjectdoAction(BaseActionView, test):
+
+	action_name = "cases_do_data"
+	description = "所选的 %(verbose_name_plural)s进行测试"
+	model_perm = 'change'
+	icon = 'fa fa-check'
+
+	def do_action(self, queryset):
+		global regular_result
+		regular_result = {}
+
+		# 循环获取queryset 对象中的列表
+		for a in queryset.values():
+			id = a['id']
+			data_object = InterfaceInfo.objects.filter(case_group__belong_project_id = id).values().order_by("id")
+			case_id = []
+			for caseid in data_object:
+				case_id.append(caseid['id'])
+
+			# 根据获取到到的测试用例组ID，根据用例组ID修改测试结果不是最新数据
+			new = {"new_case": 0}
+			CaseSuiteRecord.objects.filter(test_case__in=case_id).update(**new)
+			# 把数据转换成list
+			data_list = list(data_object)
+			print(data_list)
+			execute(id, data_list, regular_result)
+		messages.success(self.request, "测试用例组执行")
+		return None
 
 
 # 根据用例组来执行测试用例
@@ -264,6 +267,7 @@ class ProjectInfoAdmin(object):
 	list_editable = ['product_name']
 	# raw_id_fields = ('url_name',)
 	list_per_page = 10
+	actions = [ProjectdoAction,]
 
 
 class CaseInfoAdmin(object):

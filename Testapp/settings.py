@@ -56,10 +56,10 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_user_agents.middleware.UserAgentMiddleware',
-    'middleware.middleware.IpBlackListMiddleware',
-    'middleware.middleware.OnlineUsersMiddleware',
-    'middleware.middleware.UrlNumeber',
-    'middleware.middleware.OperationLogMiddleware',
+    # 'middleware.middleware.IpBlackListMiddleware',
+    # 'middleware.middleware.OnlineUsersMiddleware',
+    # 'middleware.middleware.UrlNumeber',
+    # 'middleware.middleware.OperationLogMiddleware',
 
 ]
 
@@ -92,7 +92,7 @@ AUTHENTICATION_BACKENDS = ['user.views.EmailBackend']
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': str(BASE_DIR / 'db_err.sqlite3'),
+        'NAME': str(BASE_DIR / 'db.sqlite3'),
     }
 }
 
@@ -213,7 +213,7 @@ CACHES = {
         }
     },
 }
-USER_AGENTS_CACHE = 'default'
-
-EXPLORER_CONNECTIONS = { 'Default': 'default' }
-EXPLORER_DEFAULT_CONNECTION = 'default'
+# USER_AGENTS_CACHE = 'default'
+#
+# EXPLORER_CONNECTIONS = { 'Default': 'default' }
+# EXPLORER_DEFAULT_CONNECTION = 'default'
