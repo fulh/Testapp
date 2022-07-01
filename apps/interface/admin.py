@@ -14,7 +14,7 @@ from django.utils.safestring import mark_safe
 from django.utils.datetime_safe import datetime
 from django.contrib import messages
 
-from charts.models import CaseapiCharts
+from charts.models import CaseapiCharts,BarCharts,Progress
 from .models import Pathurl, ProjectInfo, CaseInfo, InterfaceInfo, CaseSuiteRecord,PerformanceInfo,PerformanceResultInfo
 from user.models import UserProfile,IpAddre
 from .views import request_case
@@ -42,17 +42,18 @@ class GlobalSettings(object):
 	def get_site_menu(self):
 		return[
 			{'title':"测试结果",
-			 'icon': 'fa fa-i-cursor',
+			 'icon': 'fa fa-bar-chart',
 			 'menus':[
-				 {'title':'接口测试结果','icon': 'fa fa-bug','url':self.get_model_url(CaseapiCharts, 'changelist')},
-				 {'title': '测试进度统计', 'icon': 'fa fa-bug', 'url': self.get_model_url(CaseapiCharts, 'changelist')},
-				 {'title': '缺陷统计', 'icon': 'fa fa-bug', 'url': self.get_model_url(CaseapiCharts, 'changelist')}
+				 {'title':'接口测试结果','icon': 'fa fa-pie-chart','url':self.get_model_url(CaseapiCharts, 'changelist')},
+				 # {'title': '测试进度统计', 'icon': 'fa fa-line-chart', 'url': self.get_model_url(BarCharts, 'changelist')},
+				 # # {'title': '缺陷统计', 'icon': 'fa fa-bug', 'url': self.get_model_url(Progress, 'changelist')},
+				 # {'title': '缺陷统计', 'icon': 'fa fa-signal', 'url': self.get_model_url(Progress, 'changelist')},
 			 ]
 			 },
 			{'title': "接口测试",
 			 'icon': 'fa fa-bars',
 			 'menus': [
-				 {'title': '接口URL地址', 'icon': 'fa fa-bug', 'url': self.get_model_url(Pathurl, 'changelist')},
+				 {'title': '接口URL地址', 'icon': 'fa fa-arrows-alt', 'url': self.get_model_url(Pathurl, 'changelist')},
 				 {'title': '项目列表', 'icon': 'fa fa-asterisk', 'url': self.get_model_url(ProjectInfo, 'changelist')},
 				 {'title': '用例组列表', 'icon': 'fa fa-quora', 'url': self.get_model_url(CaseInfo, 'changelist')},
 				 {'title': '用例列表', 'icon': 'fa fa-suitcase', 'url': self.get_model_url(InterfaceInfo, 'changelist')},
@@ -246,6 +247,8 @@ class CaseInfoAdmin(object):
 		'case_group_describe',
 		'create_time',
 		'update_time',
+		# 'case_sum',
+		'clease_sun',
 	]
 
 	ordering = ("id",)
@@ -261,6 +264,13 @@ class CaseInfoAdmin(object):
 	# 	'url_name',
 	# 	'url_path'
 	# )
+	def clease_sun(self, obj):
+		# 修改按钮
+		button_html = '<a  style="color: red" href="/xadmin/interface/interfaceinfo/?_p_case_group__id__exact=%s">%s</a>' % (obj.id,obj.groupsfu.all().count())
+		return format_html(button_html)
+
+	clease_sun.short_description = '<span style="color: green">用例数</span>'
+	clease_sun.allow_tags = True
 
 	def update_interface_info(self, case_id, field, value):
 		"""
@@ -378,7 +388,7 @@ class InterfaceInfoAdmin(object):
 	# 可以通过搜索框搜索的字段名称
 	search_fields = ("case_name",)
 	# 可以进行过滤操作的列
-	list_filter = ["pass_status", "create_time"]
+	list_filter = ['case_group',"pass_status", "create_time"]
 	list_display_links = ('id', 'case_group', 'case_name')
 	show_detail_fields = ['case_name']
 	list_editable = ['case_name']
@@ -403,12 +413,13 @@ class InterfaceInfoAdmin(object):
 	)
 
 	def make_published(self, request, queryset):
-		print(queryset)
+
 		global regular_result
 		regular_result = {}
 		data_list = list(queryset.values().order_by("id"))
 		print(data_list)
 		# 把QuerySet对象转换成列表
+
 		for item in data_list:
 			case_id = item["id"]
 			request_mode = item["request_mode"]
@@ -491,12 +502,15 @@ class InterfaceInfoAdmin(object):
 	make_published.short_description = "执行测试用例"
 	actions = [CopyAction,CasedoAction, make_published]
 
+
 class CaseSuiteRecordAdmin(object):
+
 	model = CaseSuiteRecord
 	extra = 1
 	# 提供1个足够的选项行，也可以提供N个
 	style = "accordion"
 	model_icon = 'fa fa-etsy'
+
 
 	list_display = [
 		# 'id',
@@ -510,6 +524,7 @@ class CaseSuiteRecordAdmin(object):
 		'execute_total_time',
 		'create_time',
 		'show_intro',
+
 	]
 	# 排序
 	ordering = ("-id",)
@@ -534,6 +549,8 @@ class CaseSuiteRecordAdmin(object):
 		short_text = obj.actual_result[:short_text_len] + '......'
 		detail_id = f'{obj._meta.db_table}_detail_text_{obj.id}'
 		detail_text = obj.actual_result
+
+
 
 		text = """<style type="text/css">
 	                    #%s,%s {padding:10px;border:1px solid green;} 

@@ -79,7 +79,7 @@ class CaseInfo(models.Model):
 
 	def case_sum(self):
 		# 用例总数
-		return self.groups.all().count()
+		return self.groupsfu.all().count()
 
 	# 利用外键反向统计语句
 

@@ -3,12 +3,12 @@ from pyecharts.charts import Bar, Line, Grid, Liquid,Pie
 from pyecharts import options as opts
 from pyecharts.commons.utils import JsCode
 # 注释掉链接禅道数据库
-# from .cultivates import modulebug
+from .cultivates import modulebug
 from pyecharts.globals import ThemeType
 import pandas as pd
 from pyecharts.globals import SymbolType
 # 注释链接禅道数据库
-# from .sql_util import SQLTool
+from .sql_util import SQLTool
 
 from django.db.models import Count
 

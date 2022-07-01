@@ -1,12 +1,12 @@
 import xadmin
 from xadmin import views
-# from .sql_util import SQLTool
+from .sql_util import SQLTool
 from xadmin.views.base import CommAdminView
 from django.db.models import Count
 
 
 from interface.models import CaseSuiteRecord
-# from .barbase import bar_base, charts_base, bar_test, bar_Liquid, bar_two, progress_bar,bugTrend_bar,case_pie
+from .barbase import bar_base, charts_base, bar_test, bar_Liquid, bar_two, progress_bar,bugTrend_bar,case_pie
 from .barbase import  bar_Liquid, bar_two, progress_bar,bugTrend_bar,case_pie
 from .models import Progress,BarCharts,CaseapiCharts,CaseReport
 from charts import sqlfile
@@ -14,12 +14,11 @@ from charts import sqlfile
 
 
 class ProgressAdmin(object):
-	# list_display = []
+	"""
+	项目业务中模块中的每个应用的缺陷详细统计
+	"""
 	object_list_template = "test1.html"
-	# model_icon = 'fa fa-quora'
 	model_icon = 'fa fa-line-chart'
-	# model_icon = 'fa fa-area-chart'
-	# model_icon = 'fa fa-chart'
 
 	def get_context(self):
 		context = CommAdminView.get_context(self)
@@ -46,6 +45,9 @@ class ProgressAdmin(object):
 
 
 class BarChartsAdmin(object):
+	"""
+	这是用于缺陷趋势图和项目测试进度
+	"""
 	# list_display = []
 	# 设置需要跳转的页面 index1.html，这个页面需要在template
 	object_list_template = "index1.html"
@@ -94,10 +96,11 @@ class BarChartsAdmin(object):
 
 
 class CaseapiChartsAdmin(object):
+	"""
+	是接口测试结果统计结果
+	"""
 	object_list_template = "case_apicharts.html"
 	model_icon = 'fa fa-pie-chart'
-
-
 
 	def get_context(self):
 		context = CommAdminView.get_context(self)
@@ -111,7 +114,11 @@ class CaseapiChartsAdmin(object):
 		)
 		return context
 
+
 class CaseReportAdmin(object):
+	"""
+
+	"""
 	# list_display = []
 	# 设置需要跳转的页面 index1.html，这个页面需要在template
 	object_list_template = "index1.html"
@@ -122,5 +129,5 @@ class CaseReportAdmin(object):
 		context = CommAdminView.get_context(self)
 
 xadmin.site.register(CaseapiCharts,CaseapiChartsAdmin)
-# xadmin.site.register(Progress, ProgressAdmin)
-# xadmin.site.register(BarCharts, BarChartsAdmin)
+xadmin.site.register(Progress, ProgressAdmin)
+xadmin.site.register(BarCharts, BarChartsAdmin)
