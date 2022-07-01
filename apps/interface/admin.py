@@ -101,7 +101,7 @@ class CopyAction(BaseActionView):
 		return None
 
 # 根据项目来来执行测试用例
-class ProjectdoAction(BaseActionView, test):
+class ProjectdoAction(BaseActionView):
 
 	action_name = "cases_do_data"
 	description = "所选的 %(verbose_name_plural)s进行测试"
