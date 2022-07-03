@@ -1,5 +1,6 @@
 # coding=utf-8
-from .sql_util import SQLTool
+# 注释掉禅道链接数据库地址
+# from .sql_util import SQLTool
 
 
 def modulebug(sql):

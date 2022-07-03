@@ -8,7 +8,7 @@ from pyecharts.globals import ThemeType
 import pandas as pd
 from pyecharts.globals import SymbolType
 # 注释链接禅道数据库
-from .sql_util import SQLTool
+# from .sql_util import SQLTool
 
 from django.db.models import Count
 

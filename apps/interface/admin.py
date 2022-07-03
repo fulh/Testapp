@@ -125,7 +125,7 @@ class ProjectdoAction(BaseActionView):
 			CaseSuiteRecord.objects.filter(test_case__in=case_id).update(**new)
 			# 把数据转换成list
 			data_list = list(data_object)
-			print(data_list)
+			# print(data_list)
 			execute(id, data_list, regular_result)
 		messages.success(self.request, "测试用例组执行")
 		return None
@@ -275,6 +275,7 @@ class CaseInfoAdmin(object):
 
 	list_display = [
 		'id',
+		'belong_project',
 		'case_group_name',
 		'case_group_describe',
 		'create_time',
@@ -283,10 +284,10 @@ class CaseInfoAdmin(object):
 	]
 
 	ordering = ("id",)
-	search_fields = ("case_group_name", "case_group_name")
-	list_filter = ["case_group_name", "case_group_name"]
-	list_display_links = ('case_group_name', 'case_group_name')
-	show_detail_fields = ['url_name']
+	search_fields = ("case_group_name", "belong_project")
+	# list_filter = ["case_group_name", "belong_project"]
+	# list_display_links = ('case_group_name', 'belong_project')
+	# show_detail_fields = ['case_group_name']
 	list_editable = ['case_group_name']
 	list_per_page = 10
 
