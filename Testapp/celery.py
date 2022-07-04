@@ -6,7 +6,7 @@ import os
 from celery import Celery
 
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'taskproj.settings')  # 设置django环境
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Testapp.settings')  # 设置django环境
 
 app = Celery('taskproj')
 

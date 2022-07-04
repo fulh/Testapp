@@ -17,7 +17,6 @@ from charts.models import CaseapiCharts, BarCharts, Progress
 from .models import Pathurl, ProjectInfo, CaseInfo, InterfaceInfo, CaseSuiteRecord, PerformanceInfo, \
 	PerformanceResultInfo,regular
 from user.models import UserProfile, IpAddre
-from .views import request_case
 from tools import rep_expr, execute
 
 

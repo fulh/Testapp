@@ -1,13 +1,13 @@
 import re
 from time import sleep
-
 import demjson
 import requests
 from django.shortcuts import render
 
-from . import tasks
+from interface import tasks
 from django.http import JsonResponse
-from .models import InterfaceInfo,CaseInfo,regular
+from interface.models import InterfaceInfo,CaseInfo,regular,CaseSuiteRecord
+from tools import execute
 
 def test_case(request):
 	nid = 1
@@ -159,37 +159,18 @@ def case_test2(request):
 		sleep(wait_time)
 	return render(request, "index.html")
 
-def request_case(request_mode,interface_url,request_body,request_head,request_parameter):
-	response = requests.request(
-		request_mode,
-		url=interface_url,
-		data=request_body,
-		headers=demjson.decode(request_head),
-		params=request_parameter
-	)
-	return response
-
-
-def regular_info(id,response,regular_parameter=None):
-	parameter = regular.objects.filter(test_id_id=id).values().order_by("-id")
-	variable_dit ={}
-	for variable in list(parameter):
-		if variable['request_choice'] == "请求头":
-			variable_value = re.findall(variable['regular_template'],response.headers)[0]
-		elif variable['request_choice'] == "请求体":
-			vv = variable['regular_template']
-			variable_value = re.findall(variable['regular_template'], response.text)[0]
-
-		variable_dit[variable["regular_variable"]] = variable_value
-
-
-	return variable_dit
-
 
 def index(request,*args,**kwargs):
-    res=tasks.add.delay(1,3)
-    # res = tasks.case.delay()
-    #任务逻辑
-    return JsonResponse({'status':'successful','task_id':res.task_id,})
+	global regular_result
+	regular_result = {}
+	#
+	new = {"new_case": 0}
+	CaseSuiteRecord.objects.all().update(**new)
+	case_list = list(InterfaceInfo.objects.all().values())
+	case_re = tasks.execute.delay(1, case_list, regular_result)
+	# res = tasks.add.delay(1,3)
+	# res = tasks.case.delay()
+	#任务逻辑
+	return JsonResponse({'status':'successful','task_id':case_re.task_id,})
 
 

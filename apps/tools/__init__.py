@@ -3,9 +3,9 @@ import json
 # from jsonpath import jsonpath
 from loguru import logger
 import demjson
+import requests
 from time import sleep
 
-from interface.views import request_case,regular_info
 from interface.models import Pathurl, ProjectInfo, CaseInfo, InterfaceInfo, CaseSuiteRecord,regular
 
 def rep_expr(url,dic):
@@ -121,3 +121,26 @@ def execute(id,dic,regular_result):
 			create_case_info(**result)
 		sleep(wait_time)
 
+def request_case(request_mode,interface_url,request_body,request_head,request_parameter):
+	response = requests.request(
+		request_mode,
+		url=interface_url,
+		data=request_body,
+		headers=demjson.decode(request_head),
+		params=request_parameter
+	)
+	return response
+
+
+def regular_info(id,response,regular_parameter=None):
+	parameter = regular.objects.filter(test_id_id=id).values().order_by("-id")
+	variable_dit ={}
+	for variable in list(parameter):
+		if variable['request_choice'] == "请求头":
+			variable_value = re.findall(variable['regular_template'],response.headers)[0]
+		elif variable['request_choice'] == "请求体":
+			vv = variable['regular_template']
+			variable_value = re.findall(variable['regular_template'], response.text)[0]
+
+		variable_dit[variable["regular_variable"]] = variable_value
+	return variable_dit
