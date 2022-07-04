@@ -4,6 +4,9 @@ from time import sleep
 import demjson
 import requests
 from django.shortcuts import render
+
+from . import tasks
+from django.http import JsonResponse
 from .models import InterfaceInfo,CaseInfo,regular
 
 def test_case(request):
@@ -182,5 +185,11 @@ def regular_info(id,response,regular_parameter=None):
 
 	return variable_dit
 
+
+def index(request,*args,**kwargs):
+    res=tasks.add.delay(1,3)
+    # res = tasks.case.delay()
+    #任务逻辑
+    return JsonResponse({'status':'successful','task_id':res.task_id,})
 
 

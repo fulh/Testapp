@@ -59,7 +59,8 @@ class GlobalSettings(object):
 				 {'title': '项目列表', 'icon': 'fa fa-asterisk', 'url': self.get_model_url(ProjectInfo, 'changelist')},
 				 {'title': '用例组列表', 'icon': 'fa fa-quora', 'url': self.get_model_url(CaseInfo, 'changelist')},
 				 {'title': '用例列表', 'icon': 'fa fa-suitcase', 'url': self.get_model_url(InterfaceInfo, 'changelist')},
-				 {'title': '测试结果列表', 'icon': 'fa fa-etsy', 'url': self.get_model_url(CaseSuiteRecord, 'changelist')}
+				 {'title': '测试结果列表', 'icon': 'fa fa-etsy', 'url': self.get_model_url(CaseSuiteRecord, 'changelist')},
+				 {'title': '正则表达提取', 'icon': 'fa fa-cc', 'url': self.get_model_url(regular, 'changelist')}
 			 ]
 			 },
 			{'title': "性能测试",
@@ -374,8 +375,8 @@ class InterfaceInfoAdmin(object):
 			         'request_parameter', 'request_head', 'body_type',
 			         'request_body', 'expected_result', 'response_assert',
 			         'wait_time'),
-			Fieldset('正则表达式提取器',
-			         'regular_expression', 'regular_variable', 'regular_template'),
+			# Fieldset('正则表达式提取器',
+			#          'regular_expression', 'regular_variable', 'regular_template'),
 		),
 		# Side(
 		# 	Fieldset('响应信息部分','response_code', 'actual_result', 'pass_status'),
@@ -395,8 +396,8 @@ class InterfaceInfoAdmin(object):
 		'request_head',
 		'body_type',
 		'request_body',
-		'expected_result',
-		'regular_expression',
+		# 'expected_result',
+		# 'regular_expression',
 		# 'pass_status',
 		'update_button',
 		'delete_button',
@@ -426,9 +427,9 @@ class InterfaceInfoAdmin(object):
 		'expected_result',
 		'response_assert',
 		'wait_time',
-		'regular_expression',
-		'regular_variable',
-		'regular_template',
+		# 'regular_expression',
+		# 'regular_variable',
+		# 'regular_template',
 	)
 
 	# 批量编辑要是使用BatchChangeAction
