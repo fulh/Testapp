@@ -5,8 +5,8 @@ from loguru import logger
 import demjson
 from time import sleep
 
-from interface.views import request_case
-from interface.models import Pathurl, ProjectInfo, CaseInfo, InterfaceInfo, CaseSuiteRecord
+from interface.views import request_case,regular_info
+from interface.models import Pathurl, ProjectInfo, CaseInfo, InterfaceInfo, CaseSuiteRecord,regular
 
 def rep_expr(url,dic):
 	"""
@@ -42,9 +42,9 @@ def execute(id,dic,regular_result):
 		request_parameter = item["request_parameter"]
 		expected_result = item["expected_result"]
 		response_assert = item["response_assert"]
-		regular_expression = item["regular_expression"]
-		regular_variable = item["regular_variable"]
-		regular_template = item["regular_template"]
+		# regular_expression = item["regular_expression"]
+		# regular_variable = item["regular_variable"]
+		# regular_template = item["regular_template"]
 		# actual_result = item["actual_result"]
 		wait_time = item["wait_time"]
 
@@ -70,17 +70,23 @@ def execute(id,dic,regular_result):
 		# 等价于json.loads()反序列化
 
 		# 根据获取到每天测试用例，发送request请求
-		print("请求",request_parameter)
 		response = request_case(request_mode, interface_url, request_body, request_head, request_parameter)
 
-		if regular_expression == "开启" and regular_variable is not None:
-			"""					
-			如果正则表达式开启，并且变量名不为空
-			param regular_template 正则表达式
-			param response.text 返回的结果
-			根据表达式，提取变量值，赋值给全局变量regular_result
-			"""
-			regular_result[regular_variable] = re.findall(regular_template, response.text)[0]
+		# 正则表达式，根据表达式提取值，赋值给变量名
+		regular_result.update(regular_info(case_id,response))
+		print(regular_result)
+
+
+		# if regular_expression == "开启" and regular_variable is not None:
+		# 	"""
+		# 	如果正则表达式开启，并且变量名不为空
+		# 	param regular_template 正则表达式
+		# 	param response.text 返回的结果
+		# 	根据表达式，提取变量值，赋值给全局变量regular_result
+		# 	"""
+		# 	regular_result[regular_variable] = re.findall(regular_template, response.text)[0]
+
+
 
 		result_code = response.status_code
 		# 实际的响应代码
@@ -114,3 +120,4 @@ def execute(id,dic,regular_result):
 			result['pass_status'] = 0
 			create_case_info(**result)
 		sleep(wait_time)
+

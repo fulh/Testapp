@@ -4,7 +4,7 @@ from time import sleep
 import demjson
 import requests
 from django.shortcuts import render
-from .models import InterfaceInfo,CaseInfo
+from .models import InterfaceInfo,CaseInfo,regular
 
 def test_case(request):
 	nid = 1
@@ -165,3 +165,22 @@ def request_case(request_mode,interface_url,request_body,request_head,request_pa
 		params=request_parameter
 	)
 	return response
+
+
+def regular_info(id,response,regular_parameter=None):
+	parameter = regular.objects.filter(test_id_id=id).values().order_by("-id")
+	variable_dit ={}
+	for variable in list(parameter):
+		if variable['request_choice'] == "请求头":
+			variable_value = re.findall(variable['regular_template'],response.headers)[0]
+		elif variable['request_choice'] == "请求体":
+			vv = variable['regular_template']
+			variable_value = re.findall(variable['regular_template'], response.text)[0]
+
+		variable_dit[variable["regular_variable"]] = variable_value
+
+
+	return variable_dit
+
+
+

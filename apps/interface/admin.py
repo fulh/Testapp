@@ -15,7 +15,7 @@ from django.contrib import messages
 
 from charts.models import CaseapiCharts, BarCharts, Progress
 from .models import Pathurl, ProjectInfo, CaseInfo, InterfaceInfo, CaseSuiteRecord, PerformanceInfo, \
-	PerformanceResultInfo
+	PerformanceResultInfo,regular
 from user.models import UserProfile, IpAddre
 from .views import request_case
 from tools import rep_expr, execute
@@ -339,10 +339,12 @@ class CaseInfoAdmin(object):
 class InterfaceInfoAdmin(object):
 
 	model = InterfaceInfo
-	extra = 1
+	extra = 0
 	# 提供1个足够的选项行，也可以提供N个
 	style = "accordion"
 	model_icon = 'fa fa-suitcase'
+	# 在后台admin页面不需要显示关联项
+	use_related_menu = False
 
 	# 折叠
 	def update_interface_info(self, case_id, field, value):
@@ -412,6 +414,7 @@ class InterfaceInfoAdmin(object):
 	raw_id_fields = ('case_group',)
 	list_per_page = 10
 
+	# 可以批量编辑的字段，要再action中继承BatchChangeAction 才可以使用
 	batch_fields = (
 		'case_name',
 		'interface_url',
@@ -428,7 +431,9 @@ class InterfaceInfoAdmin(object):
 		'regular_template',
 	)
 
-	actions = [CopyAction, CasedoAction]
+	# 批量编辑要是使用BatchChangeAction
+	# actions = [CopyAction, CasedoAction,BatchChangeAction]
+	actions = [CopyAction, CasedoAction, BatchChangeAction]
 
 
 class CaseSuiteRecordAdmin(object):
@@ -606,6 +611,21 @@ class PerformanceResultInfoAdmin(object):
 		return False
 
 
+class regularAdmin(object):
+	model_icon = 'fa fa-quora'
+
+	list_display = [
+		'test_id',
+		'request_choice',
+		'regular_name',
+		'regular_variable',
+		'regular_template',
+
+	]
+
+
+
+
 xadmin.site.register(Pathurl, PathurlAdmin)
 xadmin.site.register(ProjectInfo, ProjectInfoAdmin)
 xadmin.site.register(CaseInfo, CaseInfoAdmin)
@@ -613,3 +633,4 @@ xadmin.site.register(InterfaceInfo, InterfaceInfoAdmin)
 xadmin.site.register(CaseSuiteRecord, CaseSuiteRecordAdmin)
 xadmin.site.register(PerformanceInfo, PerformanceInfoAdmin)
 xadmin.site.register(PerformanceResultInfo, PerformanceResultInfoAdmin)
+xadmin.site.register(regular, regularAdmin)

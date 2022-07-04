@@ -154,21 +154,21 @@ class InterfaceInfo(models.Model):
 		max_length=5, verbose_name="等待时间", default=0.1,
 		blank=True, null=True, help_text="请输入等待时间，单位：秒")
 	# 等待时间
-	regular_expression = models.CharField(
-		choices=regular_choice, max_length=3,
-		blank=True, null=True,
-		verbose_name="开启正则表达式", default="不开启",
-		help_text="请选择是否开启正则表达式")
-	# 开启正则表达式
-	regular_variable = models.CharField(
-		max_length=11, blank=True, null=True,
-		verbose_name="正则表达式变量名", default="",
-		help_text="请输入正则表达式变量名")
-	# 正则表达式变量名
-	regular_template = models.CharField(
-		max_length=255, blank=True, null=True,
-		verbose_name="正则表达式模板", default="",
-		help_text="请输入正则表达式模板")
+	# regular_expression = models.CharField(
+	# 	choices=regular_choice, max_length=3,
+	# 	blank=True, null=True,
+	# 	verbose_name="开启正则表达式", default="不开启",
+	# 	help_text="请选择是否开启正则表达式")
+	# # 开启正则表达式
+	# regular_variable = models.CharField(
+	# 	max_length=11, blank=True, null=True,
+	# 	verbose_name="正则表达式变量名", default="",
+	# 	help_text="请输入正则表达式变量名")
+	# # 正则表达式变量名
+	# regular_template = models.CharField(
+	# 	max_length=255, blank=True, null=True,
+	# 	verbose_name="正则表达式模板", default="",
+	# 	help_text="请输入正则表达式模板")
 	# 正则表达式模板
 	# response_code = models.IntegerField(
 	# 	verbose_name="响应代码", blank=True, null=True)
@@ -330,3 +330,30 @@ class PerformanceResultInfo(models.Model):
 
 	def __str__(self):
 		return self.test_report
+
+
+class regular(models.Model):
+	# 表达式提取
+	regular_choice =(
+		('请求头',"headers"),
+		('请求体',"body")
+	)
+	test_id = models.ForeignKey(InterfaceInfo,verbose_name="测试用例",on_delete=models.CASCADE)
+	regular_name = models.CharField(max_length=32,blank=True,null=True,verbose_name="表达式名称")
+	request_choice = models.CharField(choices=regular_choice,max_length=32,verbose_name="正则获取体",default="不开启")
+	regular_variable = models.CharField(max_length=11, blank=True, null=True,verbose_name="正则表达式变量名", default="")
+	regular_template = models.CharField(max_length=255, blank=True, null=True,verbose_name="正则表达式模板", default="")
+
+	# regular_expression = models.CharField(
+	# 	choices=regular_choice, max_length=3,
+	# 	blank=True, null=True,
+	# 	verbose_name="开启正则表达式", default="不开启",
+	# 	help_text="请选择是否开启正则表达式")
+
+	class Meta:
+		db_table = 'regular_info'
+		verbose_name = "表达式列表"
+		verbose_name_plural = "正则表达式列表"
+
+	def __str__(self):
+		return self.regular_name
