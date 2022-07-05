@@ -29,7 +29,6 @@ def create_case_info(*args, **kwargs):
 
 @shared_task
 def execute(id,dic,regular_result):
-	print("================")
 	for item in dic:
 		case_id = item["id"]
 		case_group_id =item["case_group_id"]
@@ -73,8 +72,6 @@ def execute(id,dic,regular_result):
 
 		# 正则表达式，根据表达式提取值，赋值给变量名
 		regular_result.update(regular_info(case_id,response))
-		print(regular_result)
-
 
 		# if regular_expression == "开启" and regular_variable is not None:
 		# 	"""
