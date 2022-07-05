@@ -9,7 +9,6 @@ from tools import rep_expr,request_case,regular_info
 
 @shared_task
 def add(x, y):
-    print("aa")
     return x + y
 
 
@@ -30,6 +29,7 @@ def create_case_info(*args, **kwargs):
 
 @shared_task
 def execute(id,dic,regular_result):
+	print("================")
 	for item in dic:
 		case_id = item["id"]
 		case_group_id =item["case_group_id"]
@@ -102,20 +102,20 @@ def execute(id,dic,regular_result):
 			if response_assert == "包含":
 				if expected_result in result_text:
 					result['pass_status'] = 1
-					create_case_info(**result)
+					CaseSuiteRecord.objects.create(**result)
 				# 插入通过状态
 				else:
 					result['pass_status'] = 0
-					create_case_info(**result)
+					CaseSuiteRecord.objects.create(**result)
 			# 插入不通过状态
 			elif response_assert == "相等":
 				if expected_result == result_text:
 					result['pass_status'] = 1
-					create_case_info(**result)
+					CaseSuiteRecord.objects.create(**result)
 				else:
 					result['pass_status'] = 0
-					create_case_info(**result)
+					CaseSuiteRecord.objects.create(**result)
 		else:
 			result['pass_status'] = 0
-			create_case_info(**result)
+			CaseSuiteRecord.objects.create(**result)
 		sleep(wait_time)

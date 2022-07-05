@@ -4,10 +4,11 @@ import demjson
 import requests
 from django.shortcuts import render
 
-from interface import tasks
+from interface import task
 from django.http import JsonResponse
 from interface.models import InterfaceInfo,CaseInfo,regular,CaseSuiteRecord
-from tools import execute
+# from tools import execute
+
 
 def test_case(request):
 	nid = 1
@@ -163,14 +164,16 @@ def case_test2(request):
 def index(request,*args,**kwargs):
 	global regular_result
 	regular_result = {}
-	#
+	# #
 	new = {"new_case": 0}
 	CaseSuiteRecord.objects.all().update(**new)
 	case_list = list(InterfaceInfo.objects.all().values())
-	case_re = tasks.execute.delay(1, case_list, regular_result)
-	# res = tasks.add.delay(1,3)
+	case_re = task.execute.delay(1, case_list, regular_result)
+	# case_re = task.add.delay(1, 3)
+	# print(case_list)
 	# res = tasks.case.delay()
+	case_re = task.execute.delay(1, case_list, regular_result)
 	#任务逻辑
-	return JsonResponse({'status':'successful','task_id':case_re.task_id,})
+	return JsonResponse({'status':'successful','task_id':case_re.task_id})
 
 
