@@ -22,8 +22,8 @@ from tools import rep_expr, execute
 
 class BaseSetting(object):
 	"""xadmin的基本配置"""
-	# enable_themes = True  # 开启主题切换功能
-	# use_bootswatch = True  # 支持切换主题
+	enable_themes = True  # 开启主题切换功能
+	use_bootswatch = True  # 支持切换主题
 
 
 xadmin.site.register(views.BaseAdminView, BaseSetting)
