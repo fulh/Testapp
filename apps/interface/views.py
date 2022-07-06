@@ -172,7 +172,7 @@ def index(request,*args,**kwargs):
 	# case_re = task.add.delay(1, 3)
 	# print(case_list)
 	# res = tasks.case.delay()
-	case_re = task.execute.delay(1, case_list, regular_result)
+	# case_re = task.execute.delay(1, case_list, regular_result)
 	#任务逻辑
 	return JsonResponse({'status':'successful','task_id':case_re.task_id})
 

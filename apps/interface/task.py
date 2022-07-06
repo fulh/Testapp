@@ -29,6 +29,7 @@ def create_case_info(*args, **kwargs):
 
 @shared_task
 def execute(id,dic,regular_result):
+	print("=======================================")
 	for item in dic:
 		case_id = item["id"]
 		case_group_id =item["case_group_id"]
