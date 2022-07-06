@@ -164,7 +164,7 @@ def case_test2(request):
 def index(request,*args,**kwargs):
 	global regular_result
 	regular_result = {}
-	# #
+	#
 	new = {"new_case": 0}
 	CaseSuiteRecord.objects.all().update(**new)
 	case_list = list(InterfaceInfo.objects.all().values())
