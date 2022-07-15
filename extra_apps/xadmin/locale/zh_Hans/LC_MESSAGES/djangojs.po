@@ -21,6 +21,7 @@ msgstr ""
 #: static/xadmin/js/xadmin.page.dashboard.js:14
 #: static/xadmin/js/xadmin.plugin.details.js:24
 #: static/xadmin/js/xadmin.plugin.quick-form.js:172
+#: static/xadmin/js/xadmin.plugin.details.js:24
 msgid "Close"
 msgstr "关闭"
 

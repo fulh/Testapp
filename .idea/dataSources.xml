@@ -5,27 +5,13 @@
       <driver-ref>feeddcf5-224e-40fa-93ac-3cca38ca9b2b</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:C:\Users\fulh\PycharmProjects\Testapp\db.sqlite3</jdbc-url>
+      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/db.sqlite3</jdbc-url>
       <libraries>
         <library>
           <url>file://$APPLICATION_CONFIG_DIR$/jdbc-drivers/Xerial SQLiteJDBC/3.8.11.2/sqlite-jdbc-3.8.11.2.jar</url>
         </library>
         <library>
           <url>file://$APPLICATION_CONFIG_DIR$/jdbc-drivers/Xerial SQLiteJDBC/3.8.11.2/xerial-sqlite-license.txt</url>
-        </library>
-      </libraries>
-    </data-source>
-    <data-source source="LOCAL" name="db [2]" uuid="f5d14ec5-2306-47c9-9346-c849b56b28b3">
-      <driver-ref>sqlite.xerial</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:C:\Users\Administrator\PycharmProjects\Testapp\db.sqlite3</jdbc-url>
-      <libraries>
-        <library>
-          <url>file://$APPLICATION_CONFIG_DIR$/jdbc-drivers/Xerial SQLiteJDBC/3.31.1/license.txt</url>
-        </library>
-        <library>
-          <url>file://$APPLICATION_CONFIG_DIR$/jdbc-drivers/Xerial SQLiteJDBC/3.31.1/sqlite-jdbc-3.31.1.jar</url>
         </library>
       </libraries>
     </data-source>
