@@ -1,0 +1,31 @@
+{# 继承自xadmin中的base_site.html #}
+{% extends 'xadmin/base_site.html' %}
+
+{# 去掉标签栏 #}
+{% block content-nav %}
+
+{% endblock %}
+
+
+{% load staticfiles %}
+{% block title %}首页index1{% endblock %}
+
+{% block custom_bread %}
+{% endblock %}
+
+{% block content %}
+
+{#    <div id="projectpic" style="background-color:#66CC99; color:#993300;height:650px;border:1px;position:relative;">#}
+{#        <img src="/static/media/project.png">#}
+{#    </div>#}
+    <div id="projectpic" style="background-color:#66CC99; color:#993300;height:625px;border:1px;position:relative;">
+        <img src="/static/media/project.png" style="position:absolute;height:620px;top:0;left:0;right:0;bottom:0;margin:auto">
+    </div>
+
+{% endblock %}
+{% block custom_js %}
+<script type="text/javascript" src="{% static 'js/index.js' %}"></script>
+{% endblock %}
+
+
+

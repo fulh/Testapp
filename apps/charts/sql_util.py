@@ -5,7 +5,7 @@ import traceback
 import threading
 import pymysql
 
-db = pymysql.connect(host="10.88.3.214",port=3306,user="root", password="123456",db="zentao", charset="utf8",init_command='SET NAMES UTF8',use_unicode=True)
+db = pymysql.connect(host="127.0.0.1",port=3306,user="root", password="admin",db="zentao", charset="utf8",init_command='SET NAMES UTF8',use_unicode=True)
 
 class SQLTool:
 	def __init__(self):
@@ -33,7 +33,6 @@ class SQLTool:
 		db.ping(reconnect=True)
 		cur = db.cursor()
 		cur.execute(sqlstr)
-		# lock.release()
 		List = cur.fetchall()
 		self.description = cur.description
 		cur.close()

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'xadmin',
 	'user.apps.UserConfig',
     'interface.apps.InterfaceConfig',
+    'projectdata',
     'crispy_forms',
 	'charts'
 ]
@@ -56,10 +57,10 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_user_agents.middleware.UserAgentMiddleware',
-    # 'middleware.middleware.IpBlackListMiddleware',
-    # 'middleware.middleware.OnlineUsersMiddleware',
-    # 'middleware.middleware.UrlNumeber',
-    # 'middleware.middleware.OperationLogMiddleware',
+    'middleware.middleware.IpBlackListMiddleware',
+    'middleware.middleware.OnlineUsersMiddleware',
+    'middleware.middleware.UrlNumeber',
+    'middleware.middleware.OperationLogMiddleware',
 
 ]
 
@@ -151,8 +152,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # Redis
-REDIS_PWD = os.getenv('REDIS_PWD', 'zhengbang')
-REDIS_HOST = os.getenv('REDIS_HOST', '10.88.3.165')
+REDIS_PWD = os.getenv('REDIS_PWD', '')
+REDIS_HOST = os.getenv('REDIS_HOST', '127.0.0.1')
 REDIS_PORT = os.getenv('REDIS_PORT', '6379')
 if REDIS_PWD:
     REDIS_STR = f':{REDIS_PWD}@'
@@ -213,15 +214,22 @@ CACHES = {
         }
     },
 }
-# USER_AGENTS_CACHE = 'default'
-#
-# EXPLORER_CONNECTIONS = { 'Default': 'default' }
-# EXPLORER_DEFAULT_CONNECTION = 'default'
+USER_AGENTS_CACHE = 'default'
+
+EXPLORER_CONNECTIONS = { 'Default': 'default' }
+EXPLORER_DEFAULT_CONNECTION = 'default'
 
 
 
-CELERY_BROKER_URL = 'redis://:zhengbang@10.88.3.165:6379/9' # Broker配置，使用Redis作为消息中间件
+CELERY_BROKER_URL = 'redis://:127.0.0.1:6379/9' # Broker配置，使用Redis作为消息中间件
 
-CELERY_RESULT_BACKEND = 'redis://:zhengbang@10.88.3.165:6379/9' # BACKEND配置，这里使用redis
+CELERY_RESULT_BACKEND = 'redis://:127.0.0.1:6379/9' # BACKEND配置，这里使用redis
 
 CELERY_RESULT_SERIALIZER = 'json' # 结果序列化方案
+
+#
+# CELERY_BROKER_URL = 'redis://:zhengbang@10.88.3.165:6379/9' # Broker配置，使用Redis作为消息中间件
+#
+# CELERY_RESULT_BACKEND = 'redis://:zhengbang@10.88.3.165:6379/9' # BACKEND配置，这里使用redis
+#
+# CELERY_RESULT_SERIALIZER = 'json' # 结果序列化方案

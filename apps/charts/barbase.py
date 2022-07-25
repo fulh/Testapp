@@ -8,7 +8,7 @@ from pyecharts.globals import ThemeType
 import pandas as pd
 from pyecharts.globals import SymbolType
 # 注释链接禅道数据库
-# from .sql_util import SQLTool
+from .sql_util import SQLTool
 
 from django.db.models import Count
 
@@ -124,10 +124,10 @@ def bar_base(sqlname, sqlline, progresssql, listproduct, sqltoday=None) -> Bar:
 	for a in productlist:
 		new_productlist.append(a[0])
 	# print("************",list(new_productlist))
-	alist = modulebug(sqlline)
+	# alist = modulebug(sqlline)
 	listline, leng = SQLTool().select_include_name(sqlline)
-	modulename = modulebug(sqlname)
-	todaydata = modulebug(sqltoday)
+	# modulename = modulebug(sqlname)
+	# todaydata = modulebug(sqltoday)
 	jd = SQLTool().select_test(progresssql)
 	active = []
 	resolved = []
