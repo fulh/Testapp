@@ -18,6 +18,24 @@
 {#    <div id="projectpic" style="background-color:#66CC99; color:#993300;height:650px;border:1px;position:relative;">#}
 {#        <img src="/static/media/project.png">#}
 {#    </div>#}
+
+    <div id="story" style="background-color:#66CC99; color:#993300;height:25px;border:1px;position:relative;">
+        <form action="<%=path %>/fycx?type=fycx" id="formAdd" name="formAdd" method="post">
+            <select onchange="test(this)">
+                <option value = "" >--请选择--</option>
+                {% for athlete in story_bar %}
+                    <option value = "/xadmin/projectdata/projectpic/?id={{ athlete.id }}" >{{ athlete.story }}</option>
+                {% endfor %}
+            </select>
+        </form>
+        <script>
+            function test(obj) {
+                location.href = (obj.options[obj.selectedIndex].value);
+            }
+        </script>
+    </div>
+
+
     <div id="projectpic" style="background-color:#66CC99; color:#993300;height:625px;border:1px;position:relative;">
         <img src="/static/media/project.png" style="position:absolute;height:620px;top:0;left:0;right:0;bottom:0;margin:auto">
     </div>

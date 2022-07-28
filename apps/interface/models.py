@@ -200,7 +200,7 @@ class CaseSuiteRecord(models.Model):
 	id = models.AutoField(primary_key=True)
 	case_suite_record = models.ForeignKey(CaseInfo, on_delete=models.CASCADE, verbose_name='测试用例组')
 	test_case = models.ForeignKey(InterfaceInfo, on_delete=models.CASCADE, verbose_name='测试用例')
-	request_data = models.CharField('请求体', max_length=1024, null=True)
+	request_data = models.CharField('请求体数据', max_length=1024, null=True)
 	response_code = models.IntegerField(verbose_name="响应代码", blank=True, null=True)
 	# 响应代码
 	interface_url = models.CharField(null=True, max_length=255, verbose_name="接口地址", help_text="请输入接口地址")

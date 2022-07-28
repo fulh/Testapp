@@ -5,3 +5,6 @@ class ProjectdataConfig(AppConfig):
     name = 'projectdata'
     app_icon = 'fa fa-area-chart'
     verbose_name = '项目进度'
+
+    def ready(self):
+        from projectdata import signals

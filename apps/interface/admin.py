@@ -17,6 +17,7 @@ from charts.models import CaseapiCharts, BarCharts, Progress
 from .models import Pathurl, ProjectInfo, CaseInfo, InterfaceInfo, CaseSuiteRecord, PerformanceInfo, \
 	PerformanceResultInfo,regular
 from user.models import UserProfile, IpAddre
+from projectdata.models import projectdata
 from tools import rep_expr, execute
 
 
@@ -46,9 +47,9 @@ class GlobalSettings(object):
 			 'icon': 'fa fa-bar-chart',
 			 'menus': [
 				 {'title': '接口测试结果', 'icon': 'fa fa-pie-chart', 'url': self.get_model_url(CaseapiCharts, 'changelist')},
-				 # {'title': '测试进度统计', 'icon': 'fa fa-line-chart', 'url': self.get_model_url(BarCharts, 'changelist')},
-				 # # {'title': '缺陷统计', 'icon': 'fa fa-bug', 'url': self.get_model_url(Progress, 'changelist')},
-				 # {'title': '缺陷统计', 'icon': 'fa fa-signal', 'url': self.get_model_url(Progress, 'changelist')},
+				 {'title': '测试进度统计', 'icon': 'fa fa-line-chart', 'url': self.get_model_url(BarCharts, 'changelist')},
+				 # {'title': '缺陷统计', 'icon': 'fa fa-bug', 'url': self.get_model_url(Progress, 'changelist')},
+				 {'title': '缺陷统计', 'icon': 'fa fa-signal', 'url': self.get_model_url(Progress, 'changelist')},
 			 ]
 			 },
 			{'title': "接口测试",
@@ -78,7 +79,15 @@ class GlobalSettings(object):
 				 {'title': 'IP黑名单', 'icon': 'fa fa-certificate',
 				  'url': self.get_model_url(IpAddre, 'changelist')},
 			 ]
+			 },
+			{'title': "项目管理",
+			 'icon': 'fa fa-line-chart',
+			 'menus': [
+				 {'title': '项目进度列表', 'icon': 'fa fa-thumb-tack', 'url': self.get_model_url(projectdata, 'changelist')},
+				 {'title': '项目进度图表', 'icon': 'fa fa-cny', 'url': '/xadmin/test_view'},
+			 ]
 			 }
+
 		]
 
 
@@ -624,6 +633,9 @@ class regularAdmin(object):
 	]
 
 
+
+from projectdata.views import TestView
+xadmin.site.register_view(r'test_view/$', TestView, name='for_test')
 
 
 xadmin.site.register(Pathurl, PathurlAdmin)

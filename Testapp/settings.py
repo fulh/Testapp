@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'xadmin',
 	'user.apps.UserConfig',
     'interface.apps.InterfaceConfig',
-    'projectdata',
+    'projectdata.apps.ProjectdataConfig',
     'crispy_forms',
 	'charts'
 ]

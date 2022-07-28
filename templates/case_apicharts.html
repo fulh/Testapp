@@ -14,33 +14,59 @@
 {% endblock %}
 
 {% block content %}
-{#	<section>#}
-{#		<div class="wp">#}
-{#			<ul class="feature">#}
-{#                {% for athlete in pic_casecharts %}#}
-{#                    <li class="feature1">#}
-{#                        {{athlete| safe }}#}
-{#                    </li>#}
-{#                {% endfor %}#}
-{#			</ul>#}
-{#		</div>#}
-{#	</section>#}
 
 
-{#{% block content %}#}
-    {% for athlete in pic_casecharts %}
-        <section>
-            <div class="module">
-                <div class="wp">
+    {% for athlete,case_list in case_all_pic.items %}
 {#                    <h1>自动测试情况统计</h1>#}
-                    <div class="module1 eachmod">
-                        <div class="right group_list" id="right group_list">
+                    <div class="module1 eachmod" style="color:#993300;height:326px;width:100%;border:0px;float:left;border-bottom:5px;">
+                        <div class="right group_list" id="right group_list" style="color:#993300;height:325px;width:25%;border:1px;float:left;">
                             {{athlete|safe }}
                         </div>
+                        <div class="right group_list" id="right group_list"style="color:#161515;height:325px;width:74%;border:1px;float:right;">
+                            {% if case_list %}
+                                <table class="table table-hover table-bordered table-hover dataTables-example" style="white-space:normal;word-break:break-all; word-wrap:break-word;table-layout:fixed">
+                                  <thead>
+                                    <tr>
+                                      <th style="width:4%;white-space:normal">#</th>
+                                      <th style="width:8%;white-space:normal">测试用例</th>
+{#                                      <th>请求体</th>#}
+                                      <th style="width:24%;white-space:normal">接口地址</th>
+                                      <th style="width:15%;white-space:normal">请求参数</th>
+    {#                                  <th>请求体</th>#}
+                                      <th style="width:7%;white-space:normal">响应代码</th>
+                                      <th style="width:35%;white-space:normal">实际结果</th>
+                                      <th style="width:7%;white-space:normal">是否通过</th>
+                                      <th style="width:7%;white-space:normal">耗时(秒)</th>
+
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                      {% for case in case_list %}
+                                        <tr>
+                                          <th scope="row" style="white-space:normal">{{ case.id }}</th>
+                                          <th style="white-space:normal">{{ case.test_case_id }}</th>
+    {#                                      <th>{{ case.request_data }}</th>#}
+
+                                          <th style="white-space:normal">{{ case.interface_url }}</th>
+                                          <th style="white-space:normal">{{ case.request_parameter }}</th>
+    {#                                      <th>{{ case.request_body }}</th>#}
+                                          <th style="white-space:normal">{{ case.response_code }}</th>
+                                          <th style="white-space:normal">{{ case.actual_result }}</th>
+                                           {% if case.pass_status %}
+                                               <th style="white-space:normal"><i class="fa fa-check"></i></th>
+                                           {% else %}
+                                               <th style="white-space:normal"><i class="fa fa-close"></i></th>
+                                           {% endif %}
+                                          <th style="white-space:normal">{{ case.execute_total_time }}</th>
+                                        </tr>
+                                      {% endfor %}
+                                  </tbody>
+                                </table>
+                            {% else %}
+                                <h3>测试用例全部通过</h3>
+                            {% endif %}
+                        </div>
                     </div>
-                </div>
-            </div>
-        </section>
     {% endfor %}
 {% endblock %}
 {% block custom_js %}

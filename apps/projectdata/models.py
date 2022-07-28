@@ -1,10 +1,11 @@
 from django.db import models
-from .color import color_choice
+from projectdata.color import color_choice
 from django.core.validators import MaxValueValidator, MinValueValidator
+from interface.models import ProjectInfo
+
 
 class projectdata(models.Model):
-
-    name = models.CharField(verbose_name='项目名称',max_length=32,help_text='项目名称')
+    name = models.ForeignKey(ProjectInfo,verbose_name="项目名称", on_delete=models.CASCADE)
     story = models.CharField(verbose_name='模块名称',max_length=32,help_text="模块名称")
     start_time =  models.DateTimeField(verbose_name='项目开始时间',help_text="项目开始时间")
     end_time = models.DateTimeField(verbose_name='项目结束时间', help_text="项目结束时间")
@@ -19,7 +20,7 @@ class projectdata(models.Model):
         verbose_name_plural = "项目进度"
 
     def __str__(self):
-        return self.name
+        return self.name.__str__()
 
 class projectpic(models.Model):
     class Meta:

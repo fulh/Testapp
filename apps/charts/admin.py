@@ -4,7 +4,7 @@ from .sql_util import SQLTool
 from xadmin.views.base import CommAdminView
 from django.db.models import Count
 
-from interface.models import CaseSuiteRecord
+from interface.models import CaseSuiteRecord,InterfaceInfo
 from .barbase import bar_base, charts_base, bar_test, bar_Liquid, bar_two, progress_bar,bugTrend_bar,case_pie
 from .barbase import case_pie
 # from .barbase import  bar_Liquid, bar_two, progress_bar,bugTrend_bar,case_pie
@@ -104,13 +104,32 @@ class CaseapiChartsAdmin(object):
 
 	def get_context(self):
 		context = CommAdminView.get_context(self)
-		case_suite_id = CaseSuiteRecord.objects.filter(new_case=1).distinct().values("case_suite_record_id")
+		case_suite_id = CaseSuiteRecord.objects.filter(new_case=1).distinct().values("case_suite_record_id").order_by("case_suite_record_id")
+		interdic = InterfaceInfo.objects.all().values("case_name","id")
+		print(interdic)
+		case_lists =[]
 		casecharts = []
+
 		for case_id in case_suite_id:
 			pic_casecharts	= case_pie(case_id['case_suite_record_id']).render_embed()
+			case_list=CaseSuiteRecord.objects.filter(new_case=1,pass_status=False ,case_suite_record_id = case_id['case_suite_record_id']).values()
+
+			app_list = []
+			for inter in interdic:
+				for case in case_list:
+					if inter['id'] == case['test_case_id']:
+						case['test_case_id'] = inter["case_name"]
+						app_list.append(case)
+
+			case_lists.append(app_list)
 			casecharts.append(pic_casecharts)
+		case_all_pic = (dict(zip(casecharts,case_lists)))
+		print(app_list)
+		print(case_all_pic)
+		# for case in case_lists:
+		# 	print(case)
 		context.update(
-			{"pic_casecharts":casecharts}
+			{"case_all_pic":case_all_pic,"interdic":interdic}
 		)
 		return context
 

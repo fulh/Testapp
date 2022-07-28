@@ -1,0 +1,46 @@
+{# 继承自xadmin中的base_site.html #}
+{% extends 'xadmin/base_site.html' %}
+
+{# 去掉标签栏 #}
+{% block content-nav %}
+
+{% endblock %}
+
+
+{% load staticfiles %}
+{% block title %}首页index1{% endblock %}
+
+{% block custom_bread %}
+{% endblock %}
+
+{% block content %}
+
+    <h3>选择对应项目</h3>
+    <div id="story" style="color:#993300;height:30px;border:1px;position:relative;">
+            <select class="form-control" onchange="test(this)">
+                <option value = "" >--选择项目--</option>
+                {% for athlete in story_bar %}
+                    <option value = "?id={{ athlete.name_id }}" >{{ athlete.name__product_name }}</option>
+                {% endfor %}
+            </select>
+        <script>
+            function test(obj) {
+                location.href = (obj.options[obj.selectedIndex].value);
+            }
+        </script>
+
+        {% if pic == 1 %}
+            <h5>请选择项目</h5>
+        {% else %}
+            <div id="projectpic" style="color:#993300;height:625px;border:1px;position:relative;">
+                <img src="/static/media/project.png" style="position:absolute;height:620px;top:0.5;left:0;right:0;bottom:0;margin:auto">
+            </div>
+        {% endif %}
+    </div>
+
+
+
+{% endblock %}
+{% block custom_js %}
+<script type="text/javascript" src="{% static 'js/index.js' %}"></script>
+{% endblock %}

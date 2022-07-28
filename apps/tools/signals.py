@@ -2,7 +2,6 @@ from django.db.models.signals import pre_save, post_delete,post_save,pre_init
 from django.dispatch import receiver
 from django_redis import get_redis_connection
 
-
 from apps.user.models import IpAddre
 
 
@@ -15,6 +14,7 @@ def create_update_ip_black_list(sender, **kwargs):
     :param kwargs:
     :return:
     """
+
     conn = get_redis_connection('user_info')
     instance = kwargs.get('instance')
     created = kwargs.get('created')
@@ -54,3 +54,5 @@ def init_ip(sender, args,**kwargs):
     print(sender.id)
     print(args)
     print("init",sender,kwargs)
+
+

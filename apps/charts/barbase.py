@@ -531,7 +531,7 @@ def case_pie(bugTrend):
 
 
 	c = (
-		Pie()
+		Pie(init_opts=opts.InitOpts(width="320px",height="320px"))
 			.add(
 			"",
 			case_list,

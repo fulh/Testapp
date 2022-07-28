@@ -12,6 +12,8 @@ class IpAdmin(object):
 	list_display = ['ip']
 
 
+
+
 xadmin.site.register(IpAddre,IpAdmin)
 
 
