@@ -12,6 +12,8 @@ class projectdata(models.Model):
     plan_start_time =  models.DateTimeField(verbose_name='计划开始时间',help_text="计划开始时间")
     plan_end_time = models.DateTimeField(verbose_name='计划结束时间', help_text="计划结束时间")
     Completion_ratio = models.IntegerField(validators=[MaxValueValidator(100),MinValueValidator(1)],verbose_name='进度',default=0,help_text="进度%")
+    # Completion_ratio = models.DecimalField(max_digits=100, decimal_places=2,
+    #                                        verbose_name='进度', default=0, help_text="进度%")
     color = models.CharField(choices=color_choice,verbose_name='图例颜色',max_length=32,null=False)
 
     class Meta:

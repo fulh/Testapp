@@ -301,11 +301,15 @@ class CaseInfoAdmin(object):
 	list_per_page = 10
 
 
+	# def clease_sun(self, obj):
+	# 	# 通过反向查询出用例数
+	# 	button_html = '<a  style="color: red" href="/xadmin/interface/interfaceinfo/?_p_case_group__id__exact=%s">%s</a>' % (
+	# 		obj.id, obj.groupsfu.all().count())
+	# 	return format_html(button_html)
+
 	def clease_sun(self, obj):
-		# 修改按钮
-		button_html = '<a  style="color: red" href="/xadmin/interface/interfaceinfo/?_p_case_group__id__exact=%s">%s</a>' % (
-			obj.id, obj.groupsfu.all().count())
-		return format_html(button_html)
+		# 通过反向查询出用例数
+		return obj.groupsfu.all().count()
 
 	clease_sun.short_description = '<span style="color: green">用例数</span>'
 	clease_sun.allow_tags = True

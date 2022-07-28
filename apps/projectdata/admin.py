@@ -43,8 +43,15 @@ class ProjectDataAdmin(object):
 		'plan_end_time',
 		'Completion_ratio',
 		'color',
+		'project_speed',
 	]
+	def project_speed(self, obj):
+		# 通过反向查询出用例数
+		# obj.Completion_ratio
+		return "%s%%" %(obj.Completion_ratio)
 
+	project_speed.short_description = '<span style="color: green">进度（%）</span>'
+	project_speed.allow_tags = True
 	ordering = ("id",)
 	search_fields = ("name", "story", "start_time", "Completion_ratio")
 	# list_filter = ["case_group_name", "belong_project"]
