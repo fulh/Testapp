@@ -338,6 +338,7 @@ class AdminSite(object):
 
     @property
     def urls(self):
+        print("请求的用户名",self.name, self.app_name)
         return self.get_urls(), self.name, self.app_name
 
     def i18n_javascript(self, request):

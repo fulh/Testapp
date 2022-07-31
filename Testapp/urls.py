@@ -22,7 +22,7 @@ import xadmin
 
 
 urlpatterns = [
-    # path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls),
     path('xadmin/', xadmin.site.urls),
     path('interface/', include('interface.urls')),
 ]

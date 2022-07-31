@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.html import format_html
 
 
 class Pathurl(models.Model):
@@ -61,6 +62,7 @@ class CaseInfo(models.Model):
 	# 用例组名称，并创建索引
 	case_group_describe = models.CharField(max_length=255, verbose_name="用例组描述", blank=True, null=True, default="",
 										   help_text="请输入用例组描述")
+	is_delete = models.BooleanField(verbose_name="是否已经删除",blank=True,default=True)
 	# 用例组描述
 	create_time = models.DateTimeField(auto_now_add=True, blank=True, null=True, verbose_name="创建时间")
 	# 创建时间
@@ -77,14 +79,31 @@ class CaseInfo(models.Model):
 	def __str__(self):
 		return self.case_group_name
 
-	def case_sum(self):
-		# 用例总数
-		return self.groupsfu.all().count()
+	def delete(self, using=None, keep_parents=False):
+		self.is_delete=True
+		self.save()
 
-	# 利用外键反向统计语句
+	def get_queryset(self, request):
+		qs = super().get_queryset(request)
+		return qs.filter(is_delete=False)
 
-	case_sum.short_description = '<span style="color: red">用例总数</span>'
-	case_sum.allow_tags = True
+	# def case_sum(self):
+	# 	# 用例总数
+	# 	return self.groupsfu.all().count()
+	#
+	# # 利用外键反向统计语句
+	#
+	# case_sum.short_description = '<span style="color: red">用例总数</span>'
+	# case_sum.allow_tags = True
+	def clease_sun(self):
+		# 通过反向查询出用例数
+		button_html = '<a  style="color: red" href="/xadmin/interface/interfaceinfo/?_p_case_group__id__exact=%s">%s</a>' % (
+			self.id, self.groupsfu.all().count())
+		return format_html(button_html)
+	clease_sun.short_description = '<span style="color: green">用例数</span>'
+	clease_sun.allow_tags = True
+
+
 
 
 class InterfaceInfo(models.Model):
@@ -224,6 +243,8 @@ class CaseSuiteRecord(models.Model):
 
 	def __str__(self):
 		return str(self.response_code)
+
+
 
 
 class ChartsBug(models.Model):

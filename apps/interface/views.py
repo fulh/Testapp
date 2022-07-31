@@ -10,6 +10,8 @@ from interface.models import InterfaceInfo,CaseInfo,regular,CaseSuiteRecord
 # from tools import execute
 
 
+
+
 def test_case(request):
 	nid = 1
 	# # nid=request.GET.get('nid')

@@ -16,6 +16,7 @@ class projectdata(models.Model):
     #                                        verbose_name='进度', default=0, help_text="进度%")
     color = models.CharField(choices=color_choice,verbose_name='图例颜色',max_length=32,null=False)
 
+
     class Meta:
         db_table = 'project_data'
         verbose_name = '项目进度'
