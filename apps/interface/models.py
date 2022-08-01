@@ -1,4 +1,5 @@
 from django.db import models
+from user.models import UserProfile
 from django.utils.html import format_html
 
 
@@ -67,6 +68,7 @@ class CaseInfo(models.Model):
 	create_time = models.DateTimeField(auto_now_add=True, blank=True, null=True, verbose_name="创建时间")
 	# 创建时间
 	update_time = models.DateTimeField(auto_now=True, blank=True, null=True, verbose_name="修改时间")
+	create_author = models.ForeignKey(UserProfile,max_length=32,verbose_name="创建者",on_delete=models.CASCADE,default=1,)
 
 	# 修改时间
 
@@ -80,12 +82,13 @@ class CaseInfo(models.Model):
 		return self.case_group_name
 
 	def delete(self, using=None, keep_parents=False):
+		print("modle delete")
 		self.is_delete=True
 		self.save()
 
-	def get_queryset(self, request):
-		qs = super().get_queryset(request)
-		return qs.filter(is_delete=False)
+	# def get_queryset(self, request):
+	# 	qs = super().get_queryset(request)
+	# 	return qs.filter(is_delete=False)
 
 	# def case_sum(self):
 	# 	# 用例总数
@@ -102,8 +105,6 @@ class CaseInfo(models.Model):
 		return format_html(button_html)
 	clease_sun.short_description = '<span style="color: green">用例数</span>'
 	clease_sun.allow_tags = True
-
-
 
 
 class InterfaceInfo(models.Model):

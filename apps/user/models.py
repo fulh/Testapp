@@ -58,7 +58,7 @@ class UserProfile(AbstractUser):
     mobile = models.CharField(verbose_name='手机号',max_length=11,null=True,blank=True)
     card_id = models.CharField(verbose_name='身份证',max_length=32,null=True,blank=True)
     image = RImageFiled(upload_to=upload_user_image_path,max_upload_size=56000000,default='image/default.png',max_length=100)
-    thumbnail =RImageFiled(upload_to=thumbnail_image_path,max_upload_size=2620,default='image/default.png',max_length=100)
+    thumbnail =RImageFiled(upload_to=thumbnail_image_path,max_upload_size=56000,default='image/default.png',max_length=100)
 
     class Meta:
         verbose_name = '用户信息'

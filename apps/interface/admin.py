@@ -282,7 +282,7 @@ class ProjectInfoAdmin(object):
 
 class CaseInfoAdmin(object):
     model_icon = 'fa fa-quora'
-    exclude = ['is_delete']
+    exclude = ['is_delete','create_author']
     list_display = [
         'id',
         'belong_project',
@@ -291,6 +291,7 @@ class CaseInfoAdmin(object):
         'create_time',
         'update_time',
         'clease_sun',
+        'create_author',
     ]
 
     ordering = ("id",)
@@ -348,16 +349,28 @@ class CaseInfoAdmin(object):
     make_case.short_description = "选择执行测试用例"
     actions = [CopyAction, make_case, CaseSuitedoAction]
 
-    delete_models_batch = True
+
     def delete_models(self,request):
         for obj in request:
+            print("admin delete")
             self.log('delete', '', obj)
             obj.is_delete=0
             obj.save()
-
+    #
     def queryset(self):
         qs = super(CaseInfoAdmin,self).queryset()
         return qs.filter(is_delete=True)
+
+    def save_models(self):
+        obj = self.new_obj
+
+        print(obj.belong_project)
+        print(self.request.user)
+        obj.create_author = self.request.user
+        obj.save()
+
+
+
 
 # 列表页面，添加复制动作与批量修改动作
 class InterfaceInfoAdmin(object):
