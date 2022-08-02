@@ -65,7 +65,7 @@ class UserProfile(AbstractUser):
         verbose_name_plural = verbose_name
 
     def __str__(self):
-        return self.username
+        return self.first_name+self.last_name
 
     def get_user_info(self):
         # 获取用户信息

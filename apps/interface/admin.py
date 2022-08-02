@@ -237,10 +237,17 @@ class jmeteraction(BaseActionView):
 
 
 class PathurlAdmin(object):
+
+    def save_models(self):
+        obj = self.new_obj
+        obj.create_author = self.request.user
+        obj.save()
+
     list_display = [
         'id',
         'url_name',
         'url_path',
+        'create_author',
     ]
 
     ordering = ("id",)
@@ -260,6 +267,13 @@ class PathurlAdmin(object):
 
 class ProjectInfoAdmin(object):
     model_icon = 'fa fa-asterisk'
+
+    def save_models(self):
+        obj = self.new_obj
+        obj.create_author = self.request.user
+        obj.save()
+
+    exclude = ['create_author']
     list_display = [
         'id',
         'product_name',
@@ -267,6 +281,7 @@ class ProjectInfoAdmin(object):
         'product_manager',
         'developer',
         'tester',
+        'create_author',
     ]
 
     ordering = ("id",)
@@ -303,18 +318,21 @@ class CaseInfoAdmin(object):
     list_per_page = 10
 
 
-    # def clease_sun(self, obj):
-    # 	# 通过反向查询出用例数
-    # 	button_html = '<a  style="color: red" href="/xadmin/interface/interfaceinfo/?_p_case_group__id__exact=%s">%s</a>' % (
-    # 		obj.id, obj.groupsfu.all().count())
-    # 	return format_html(button_html)
+    def clease_sun(self, obj):
+    	# 通过反向查询出用例数
+        sum = obj.groupsfu.all().count()
+        if sum>0:
+            button_html = '<a  style="color: red" href="/xadmin/interface/interfaceinfo/?_p_case_group__id__exact=%s">%s</a>' % (obj.id, obj.groupsfu.all().count())
+        else:
+            button_html = '<span style="color: black">%s</span>' % (obj.groupsfu.all().count())
+        return format_html(button_html)
 
     # def clease_sun(self, obj):
     # 	# 通过反向查询出用例数
     # 	return obj.groupsfu.all().count()
     #
-    # clease_sun.short_description = '<span style="color: green">用例数</span>'
-    # clease_sun.allow_tags = True
+    clease_sun.short_description = '<span style="color: green">用例数</span>'
+    clease_sun.allow_tags = True
 
     def update_interface_info(self, case_id, field, value):
         """
@@ -359,13 +377,14 @@ class CaseInfoAdmin(object):
     #
     def queryset(self):
         qs = super(CaseInfoAdmin,self).queryset()
-        return qs.filter(is_delete=True)
+        print(self.request.user)
+        if self.request.user.is_superuser:
+            return qs.filter(is_delete=True)
+        else:
+            return qs.filter(is_delete=True, create_author=self.request.user)
 
     def save_models(self):
         obj = self.new_obj
-
-        print(obj.belong_project)
-        print(self.request.user)
         obj.create_author = self.request.user
         obj.save()
 
@@ -404,6 +423,11 @@ class InterfaceInfoAdmin(object):
     delete_button.short_description = '<span style="color: blue">删除</span>'
     delete_button.allow_tags = True
 
+    def save_models(self):
+        obj = self.new_obj
+        obj.create_author = self.request.user
+        obj.save()
+
     form_layout = (
         Main(
             Fieldset('用例信息部分', 'case_group', 'case_name'),
@@ -437,6 +461,7 @@ class InterfaceInfoAdmin(object):
         # 'pass_status',
         'update_button',
         'delete_button',
+        'create_author',
     ]
     # 排序
     ordering = ("-id",)
@@ -577,6 +602,11 @@ class PerformanceInfoAdmin(object):
     # 提供1个足够的选项行，也可以提供N个
     style = "accordion"
     model_icon = 'fa fa-bug'
+
+    def save_models(self):
+        obj = self.new_obj
+        obj.create_author = self.request.user
+        obj.save()
 
     list_display = [
         'id',

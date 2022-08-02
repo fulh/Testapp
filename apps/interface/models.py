@@ -8,6 +8,8 @@ class Pathurl(models.Model):
 	url_path = models.CharField(max_length=32, blank=True, verbose_name="接口地址")
 	create_time = models.DateTimeField(auto_now_add=True, null=True, blank=True, verbose_name="创建时间")
 	update_time = models.DateTimeField(auto_now_add=True, null=True, blank=True, verbose_name="修改时间")
+	create_author = models.ForeignKey(UserProfile, max_length=32, verbose_name="创建者", on_delete=models.CASCADE,
+									  default=1, )
 
 	class Meta:
 		db_table = 'path_url'
@@ -34,6 +36,9 @@ class ProjectInfo(models.Model):
 	create_time = models.DateTimeField(auto_now_add=True, blank=True, null=True, verbose_name="创建时间")
 	# 创建时间
 	update_time = models.DateTimeField(auto_now=True, blank=True, null=True, verbose_name="修改时间")
+
+	create_author = models.ForeignKey(UserProfile, max_length=32, verbose_name="创建者", on_delete=models.CASCADE,
+									  default=1, )
 
 	# 修改时间
 
@@ -173,6 +178,8 @@ class InterfaceInfo(models.Model):
 	wait_time = models.FloatField(
 		max_length=5, verbose_name="等待时间", default=0.1,
 		blank=True, null=True, help_text="请输入等待时间，单位：秒")
+	# 创建用户
+	create_author = models.ForeignKey(UserProfile,max_length=32,verbose_name="创建者",on_delete=models.CASCADE,default=1,)
 	# 等待时间
 	# regular_expression = models.CharField(
 	# 	choices=regular_choice, max_length=3,
@@ -214,6 +221,8 @@ class InterfaceInfo(models.Model):
 
 	def __str__(self):
 		return self.case_name
+
+
 
 
 class CaseSuiteRecord(models.Model):
@@ -315,6 +324,8 @@ class PerformanceInfo(models.Model):
 	run_sum.short_description = '<span style="color: red">运行次数</span>'
 	run_sum.allow_tags = True
 
+	create_author = models.ForeignKey(UserProfile,max_length=32,verbose_name="创建者",on_delete=models.CASCADE,default=1,)
+
 
 class PerformanceResultInfo(models.Model):
 	# 压测结果表
@@ -365,7 +376,7 @@ class regular(models.Model):
 	request_choice = models.CharField(choices=regular_choice,max_length=32,verbose_name="正则获取体",default="不开启")
 	regular_variable = models.CharField(max_length=11, blank=True, null=True,verbose_name="正则表达式变量名", default="")
 	regular_template = models.CharField(max_length=255, blank=True, null=True,verbose_name="正则表达式模板", default="")
-
+	create_author = models.ForeignKey(UserProfile,max_length=32,verbose_name="创建者",on_delete=models.CASCADE,default=1,)
 	# regular_expression = models.CharField(
 	# 	choices=regular_choice, max_length=3,
 	# 	blank=True, null=True,
