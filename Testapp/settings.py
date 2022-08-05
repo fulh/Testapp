@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'interface.apps.InterfaceConfig',
     'projectdata.apps.ProjectdataConfig',
     'crispy_forms',
-	'charts'
+	'charts',
+    'import_export',
 ]
 
 MIDDLEWARE = [
@@ -85,7 +86,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'Testapp.wsgi.application'
-AUTHENTICATION_BACKENDS = ['user.views.EmailBackend']
+AUTHENTICATION_BACKENDS = ['user.views.LoginBackend']
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
@@ -96,7 +97,7 @@ DATABASES = {
         'NAME': str(BASE_DIR / 'db.sqlite3'),
     }
 }
-
+IMPORT_EXPORT_USE_TRANSACTIONS = True
 
 
 

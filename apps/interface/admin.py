@@ -2,6 +2,7 @@ import re
 import demjson
 from time import sleep
 import subprocess
+import logging
 
 import xadmin
 from xadmin import views
@@ -13,6 +14,14 @@ from xadmin.plugins.batch import BatchChangeAction
 from django.utils.safestring import mark_safe
 from django.utils.datetime_safe import datetime
 from django.contrib import messages
+import traceback
+from django.db.transaction import (
+    TransactionManagementError,
+    atomic,
+    savepoint,
+    savepoint_commit,
+    savepoint_rollback
+)
 
 from charts.models import CaseapiCharts, BarCharts, Progress
 from .models import Pathurl, ProjectInfo, CaseInfo, InterfaceInfo, CaseSuiteRecord, PerformanceInfo, \
@@ -21,6 +30,8 @@ from user.models import UserProfile, IpAddre
 from projectdata.models import projectdata
 from tools import rep_expr, execute
 
+from django.core.exceptions import ImproperlyConfigured, ValidationError
+logger = logging.getLogger(__name__)
 
 class BaseSetting(object):
     """xadmin的基本配置"""
@@ -388,8 +399,176 @@ class CaseInfoAdmin(object):
         obj.create_author = self.request.user
         obj.save()
 
+from import_export import resources,widgets
+from django.apps import apps
+from import_export.fields import Field
+from import_export.widgets import ForeignKeyWidget
+from import_export.results import Error, Result, RowResult
+from django.utils.encoding import force_str
+from copy import deepcopy
+
+class InterfaceInfoResource(resources.ModelResource):
+    id = Field(attribute='id', column_name="ID")
+    # case_group = Field(attribute='case_group', column_name="用例组")
+    case_group = Field(column_name='用例组', attribute='case_group', widget=ForeignKeyWidget(CaseInfo, 'case_group_name'))
+    case_name = Field(attribute='case_name', column_name="用例名称")
+    interface_url = Field(attribute='interface_url', column_name="接口地址")
+
+    def import_obj(self, obj, data, dry_run):
+        errors = {}
+        # a  = CaseInfo.objects.filter(case_group_name=data['用例组']).values()
+        # if len(a)==0:
+        #     self.errors["project"] = "项目不存在"
+        # else:
+        #     self.errors["project"] = "kong"
+
+        for field in self.get_import_fields():
+            print(field.attribute)
+            if isinstance(field.widget, widgets.ManyToManyWidget):
+                continue
+            try:
+                self.import_field(field, obj, data)
+            except ValueError as e:
+                print(e)
+                errors[field.attribute] = ValidationError(
+                    force_str(e), code="invalid")
+        if errors:
+            raise ValidationError(errors)
+
+    def import_row(self, row, instance_loader, using_transactions=True, dry_run=False, raise_errors=False, **kwargs):
+        skip_diff = self._meta.skip_diff
+        row_result = self.get_row_result_class()()
+        original = None
+        try:
+            self.before_import_row(row, **kwargs)
+            instance, new = self.get_or_init_instance(instance_loader, row)
+            self.after_import_instance(instance, new, **kwargs)
+            if new:
+                row_result.import_type = RowResult.IMPORT_TYPE_NEW
+            else:
+                row_result.import_type = RowResult.IMPORT_TYPE_UPDATE
+            row_result.new_record = new
+            if not skip_diff:
+                original = deepcopy(instance)
+                diff = self.get_diff_class()(self, original, new)
+            if self.for_delete(row, instance):
+                if new:
+                    row_result.import_type = RowResult.IMPORT_TYPE_SKIP
+                    if not skip_diff:
+                        diff.compare_with(self, None, dry_run)
+                else:
+                    row_result.import_type = RowResult.IMPORT_TYPE_DELETE
+                    self.delete_instance(instance, using_transactions, dry_run)
+                    if not skip_diff:
+                        diff.compare_with(self, None, dry_run)
+            else:
+                import_validation_errors = {}
+                try:
+                    self.import_obj(instance, row, dry_run)
+                except ValidationError as e:
+                    # Validation errors from import_obj() are passed on to
+                    # validate_instance(), where they can be combined with model
+                    # instance validation errors if necessary
+                    import_validation_errors = e.update_error_dict(import_validation_errors)
+                if self.skip_row(instance, original):
+                    row_result.import_type = RowResult.IMPORT_TYPE_SKIP
+                else:
+                    self.validate_instance(instance, import_validation_errors)
+                    self.save_instance(instance, using_transactions, dry_run)
+                    self.save_m2m(instance, row, using_transactions, dry_run)
+                    # Add object info to RowResult for LogEntry
+                    row_result.object_id = instance.pk
+                    row_result.object_repr = force_str(instance)
+                if not skip_diff:
+                    diff.compare_with(self, instance, dry_run)
+
+            if not skip_diff:
+                row_result.diff = diff.as_html()
+            self.after_import_row(row, row_result, **kwargs)
+
+        except ValidationError as e:
+            row_result.import_type = RowResult.IMPORT_TYPE_INVALID
+            row_result.validation_error = e
+        except Exception as e:
+            row_result.import_type = RowResult.IMPORT_TYPE_ERROR
+            # There is no point logging a transaction error for each row
+            # when only the original error is likely to be relevant
+            if not isinstance(e, TransactionManagementError):
+                logger.debug(e, exc_info=e)
+            tb_info = traceback.format_exc()
+            row_result.errors.append(self.get_error_result_class()(e, row))
+        return row_result
+
+    # def before_save_instance(self, instance, using_transactions, dry_run):
+    #     print(self)
+    #     print("instance")
+    #     print(using_transactions)
+    #     print(instance.case_name,instance.interface_url,instance.case_group)
+    #
+    #     return instance
 
 
+    """
+    系统在执行InterfaceInfoResource的时候，先初始化其中的数据，apps.get_model('interface', 'InterfaceInfo')._meta.fields获取到modles 中的所有字段
+    """
+    def __init__(self):
+        super(InterfaceInfoResource, self).__init__()
+        field_list = apps.get_model('interface', 'InterfaceInfo')._meta.fields
+        # 应用名与模型名
+        self.verbose_name_dict = {}
+        # 获取所有字段的verbose_name并存放在verbose_name_dict字典里
+        for i in field_list:
+            self.verbose_name_dict[i.name] = i.verbose_name
+
+
+    """
+    导入的时候，在页面显示的都是modles 中的字段名称，没有显示verbose_name 中的名字
+    通过重写field_from_django_field 函数，把column_name重写
+    """
+    @classmethod
+    def field_from_django_field(cls, field_name, django_field, readonly):
+        FieldWidget = cls.widget_from_django_field(django_field)
+        widget_kwargs = cls.widget_kwargs_for_field(field_name)
+        field = cls.DEFAULT_RESOURCE_FIELD(
+            attribute=field_name,
+             # 重写column_name
+            column_name=django_field.verbose_name,
+            widget=FieldWidget(**widget_kwargs),
+            readonly=readonly,
+            default=django_field.default,
+        )
+        return field
+
+
+
+
+    class Meta:
+        model = InterfaceInfo
+        skip_unchanged = True
+        report_skipped = True
+
+        import_id_fields = ('id',)
+        fields = (
+            'id',
+            'case_group',
+            'case_name',
+            'interface_url',
+            'request_mode',
+            'request_parameter',
+            'request_head',
+            'body_type',
+            'request_body',
+            'expected_result',
+            'response_assert',
+            'wait_time',
+
+        )
+        exclude = (
+            'create_author',
+            'update_button',
+            'delete_button',
+            'create_author',
+        )
 
 # 列表页面，添加复制动作与批量修改动作
 class InterfaceInfoAdmin(object):
@@ -401,6 +580,7 @@ class InterfaceInfoAdmin(object):
     model_icon = 'fa fa-suitcase'
     # 在后台admin页面不需要显示关联项
     use_related_menu = False
+
 
     # 折叠
     def update_interface_info(self, case_id, field, value):
@@ -493,6 +673,9 @@ class InterfaceInfoAdmin(object):
         # 'regular_template',
     )
 
+    import_export_args = {
+        'import_resource_class': InterfaceInfoResource,
+    }
     # 批量编辑要是使用BatchChangeAction
     # actions = [CopyAction, CasedoAction,BatchChangeAction]
     actions = [CopyAction, CasedoAction, BatchChangeAction]
@@ -696,6 +879,11 @@ class regularAdmin(object):
 
 from projectdata.views import TestView
 xadmin.site.register_view(r'test_view/$', TestView, name='for_test')
+
+
+
+
+
 
 
 xadmin.site.register(Pathurl, PathurlAdmin)
