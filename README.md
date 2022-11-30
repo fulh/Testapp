@@ -30,6 +30,10 @@
 ### 可以对每个接口的测试结果进行分析：
 ![image](https://user-images.githubusercontent.com/13143882/204701083-7effdc71-e4fa-4168-b6d0-cc52207cb533.png)
 
+### 根据测试计划中的进度，可以使用可视化，根据每天的进行，对项目进行的进度进行跟进：
+![image](https://user-images.githubusercontent.com/13143882/204706733-fc1ece92-99e4-4753-94f6-4d624c0802b7.png)
+
+
  
 
 
