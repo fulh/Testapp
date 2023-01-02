@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/plugins/bootstrap/css/bootstrap.css"/>
+    <link rel="stylesheet" href="/static/plugins/font-awesome/css/font-awesome.css"/>
+    <script src="/static/js/jquery-1.12.4.js"></script>
+    {% block css %} {% endblock %}
+    <title>Title</title>
+</head>
+<style>
+    .top{
+        min-width: 1190px;
+        height: 48px;
+        background-color: #2F72AB;
+        line-height: 48px;
+        overflow: visible;
+        font-size: 12px;
+    }
+    .icon{
+        width: 200px;
+        overflow: hidden;
+        height: 48px;
+        text-align: center;
+        background-color: #1c5a9c;
+    }
+    .content{
+        position: absolute;
+        z-index: 90;
+        top:50px;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        min-width: 1190px;
+
+
+    }
+    .left{
+        float: left;
+    }
+    .right{
+        float: right;
+    }
+    .menu{
+        background-color:white;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 200px;
+        border: 1px solid #dddddd;
+        border-top: 2px solid #2F72AB;
+    }
+    .contents{
+        width: 1700px;
+        height: 1000px;
+        float: right;
+        background-color: white;
+    }
+    .header_menu{
+        height: 48px;
+        width: 81%;
+    }
+    .message,.userinfo,.logout {
+        min-width: 90px;
+        text-decoration: none;
+        color: #000000;
+        height: 48px;
+        overflow: hidden;
+        text-align: center;
+    }
+    .nameinfo{
+        min-width: 120px;
+        text-decoration: none;
+        color: #000000;
+        height: 48px;
+        overflow: hidden;
+        text-align: center;
+    }
+    .nameinfo a{
+        display: block;
+        color: #000000;
+        margin-top: 0px;
+        margin-left: 5px;
+        text-align: center;
+        text-decoration:none;
+        border-top: 1px solid transparent;
+        border-bottom: 1px solid #ccc;
+        float: left;
+    }
+    .logout .logout_url a{
+        display: block;
+        text-decoration: none;
+        color: #000000;
+        height: 48px;
+        margin-top: 0px;
+    }
+    .header-danger,.header-success{
+        overflow: visible;
+        margin-top: -3px;
+    }
+    .menu-item{
+        border-left: 1px solid transparent;
+        text-decoration: none;
+        padding: 8px 10px;
+        border-bottom: 1px solid #ccc;
+        color: #333;
+        display: block;
+        background: #efefef;
+        background: -webkit-gradient(linear, left bottom, left top, color-stop(0, #efefef), color-stop(1, #fafafa));
+        background: -ms-linear-gradient(bottom, #efefef, #fafafa);
+        background: -moz-linear-gradient(center bottom, #efefef 0%, #fafafa 100%);
+        background: -o-linear-gradient(bottom, #efefef, #fafafa);
+        filter: progid:dximagetransform.microsoft.gradient(startColorStr='#e3e3e3', EndColorStr='#ffffff');
+        -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#fafafa',EndColorStr='#efefef')";
+        box-shadow: inset 0 1px 1px white;
+    }
+    .expand{
+        display: none;
+    }
+    a{
+        display: block;
+        color: #000000;
+        margin-top: 0px;
+        margin-left: 5px;
+        text-align: center;
+        text-decoration:none;
+        border-top: 1px solid transparent;
+        border-bottom: 1px solid #ccc;
+    }
+    .menu .openmenu a:hover{
+        background-color:#1c5a9c;
+        color: white;
+        border-right: 2px solid red;
+    }
+    .top .header_menu .nameinfo .header-user{
+        display: block;
+        width: 60px;
+        float: right;
+        color: yellow;
+    }
+
+</style>
+<body>
+    {% include "header_page.html" %}
+    <div class="content">
+        {% load menu_tag %}
+        <div class="menu">
+             {% get_menu request %}
+        </div>
+        <div class="contents">
+            {% block conent %} {% endblock %}
+        </div>
+    </div>
+
+</body>
+
+<script>
+        $(".openmenu").on('click',function () {
+            $(this).children('.sonmenu').removeClass("expand")
+            $(this).siblings().children(".sonmenu").addClass("expand");
+        })
+</script>
+</html>

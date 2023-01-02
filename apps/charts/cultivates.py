@@ -6,7 +6,6 @@ from .sql_util import SQLTool
 def modulebug(self,sql):
 	alist = []
 	aindex = ('value', 'name', 'id')
-	print("+++++++++++++++++",sql)
 	sqltool = SQLTool(sql)
 	data, iTotal_length = sqltool.select(sql)
 	for a in data:

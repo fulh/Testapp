@@ -389,7 +389,7 @@ def progress_bar(projectjd):
 		c = (
 			Bar(init_opts=opts.InitOpts(height="300px", width="1000"))
 				.add_xaxis(list(a["name"] for a in rust))
-				.add_yaxis("测试进度", rust, bar_width='65%', bar_max_width='50')
+				.add_yaxis("测试进度", rust, bar_width='65%', bar_max_width='30')
 				# .add_yaxis((tuple(projectjd)) + "测试总进度: " + mean_df, rust, bar_width='65%', bar_max_width='50')
 				.set_global_opts(
 				title_opts=opts.TitleOpts(title=a + "进度:{}".format(mean_df),

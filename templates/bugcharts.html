@@ -1,0 +1,46 @@
+{# 继承自xadmin中的base_site.html #}
+{% extends 'xadmin/base_site.html' %}
+
+{# 去掉标签栏 #}
+{% block content-nav %}
+
+{% endblock %}
+
+{% load staticfiles %}
+{% block title %}首页{% endblock %}
+
+{% block custom_bread %}
+{% endblock %}
+
+{% block content %}
+
+<!--banner end-->
+<div class ="body-content">
+    <div class = "content-block">
+        <div class="div1">
+            <span>缺陷总计</span>
+            {{two_bar| safe }}
+        </div>
+        <div class="div2">
+            <span>公共</span>
+            {{charts_public| safe }}
+        </div>
+        <div class="div3">
+            <span>繁殖</span>
+            {{charts_reproduction| safe }}
+        </div>
+        <div class="div4">
+             <span>育肥</span>
+             {{charts_fatten| safe }}
+        </div>
+        <div class="div5">
+            <span>购销</span>
+            {{charts_purchaseAndsale|safe }}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block custom_js %}
+<script type="text/javascript" src="{% static 'js/index.js' %}"></script>
+{% endblock %}

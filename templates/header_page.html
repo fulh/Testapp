@@ -1,0 +1,35 @@
+    <div class="top">
+            <div class="icon left">
+                <i>Fu Lihua</i>
+            </div>
+            <div class="header_menu right">
+                <div class="logout right" >
+                    <a class="logout_url" href="/logout/">
+                        <span>退出</span>
+                    </a>
+                </div>
+                <div class="userinfo right">
+                    任务
+                    <i class="fa fa-commenting-o" aria-hidden="true"></i>
+                    <span class="badge header-danger">2</span>
+                </div>
+                <div class="message right">
+                    消息
+                    <i class="fa fa-envelope-o" aria-hidden="true"></i>
+                    <span class="badge header-success">3</span>
+                </div>
+                <div class="nameinfo right">
+                    <a href="#" class="avatar">
+                        <img class="img-circle" src="/static/imgs/avatar/default.png">
+                    </a>
+                    {% if request.session.name.user_info %}
+                        <span class="header-user">欢迎!&nbsp{{ request.session.name.user_info  }}</span>
+
+                    {% elif request.session.name %}
+                        <span class="header-user">欢迎!&nbsp{{ request.session.name  }}</span>
+                    {% else %}
+                        <span class="header-user">无用户登录</span>
+                    {% endif %}
+                </div>
+            </div>
+    </div>

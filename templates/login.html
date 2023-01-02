@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="/static/plugins/bootstrap/css/bootstrap.css"/>
+  <link rel="stylesheet" href="/static/plugins/font-awesome/css/font-awesome.css"/>
+  <script src="/static/js/jquery-1.12.4.js"></script>
+  <style>
+    body {
+      background: url('https://cdn.pixabay.com/photo/2018/08/14/13/23/ocean-3605547_1280.jpg') no-repeat;
+      background-size: 100%;
+      margin-top: 0%;
+      margin-left: 0%;
+    }
+
+    #login {
+      width: 20%;
+      height: 320px;
+      background-color: #00000060;
+      margin: auto;
+      margin-top: 15%;
+      text-align: center;
+      border-radius: 10px;
+      padding: 50px 50px;
+    }
+
+    h1 {
+      color:darkcyan;
+      margin-top: 5%;
+    }
+
+    #input-name {
+      margin-top: 5%;
+    }
+
+    span {
+      color: #fff;
+    }
+
+    input {
+      border: 0;
+      width: 60%;
+      font-size: 15px;
+      color: #fff;
+      background: transparent;
+      border-bottom: 2px solid #fff;
+      padding: 5px 10px;
+      outline: none;
+      margin-top: 10px;
+    }
+    span{
+      margin-top: 10px;
+      border-radius: 10px;
+      border: 0;
+      color: red;
+      display: none;
+    }
+    button {
+      margin-top: 50px;
+      width: 60%;
+      height: 30px;
+      border-radius: 10px;
+      border: 0;
+      color: #fff;
+      text-align: center;
+      line-height: 30px;
+      font-size: 15px;
+      background-image: linear-gradient(to right, #30cfd0, #330867);
+    }
+
+
+    a {
+      color: #b94648;
+    }
+    .hide{
+        display: none;
+    }
+  </style>
+</head>
+
+
+<body>
+{% csrf_token %}
+  <div id="login">
+    <h1>登 录</h1>
+    <div class="input_name">
+      <input type="text" placeholder="请输入用户名">
+    </div>
+    <div class="input_pwd">
+      <input type="password" placeholder="请输入密码">
+    </div>
+    <div class="errmessage hide"></div>
+    <button >登&nbsp&nbsp录</button><br>
+  </div>
+</body>
+
+<script>
+    $('button').on('click', function(){
+        var name = $(":text").val()
+        var pwd = $(":password").val()
+        var csrf = $('input[name="csrfmiddlewaretoken"]').val();
+        $.ajax(
+            {
+                url:'/login/',
+                type:'POST',
+                data:{"name":name,"password":pwd,'csrfmiddlewaretoken': csrf},
+                dataType: 'JSON',
+                success:function (res) {
+                    $msg=$(".errmessage")
+                    if(res.status){
+                        location.href="/index/"
+                    }else{
+                        $msg.removeClass('hide');
+                        $msg.text(res.message);
+                        $(':text,:password').val('');
+                        }
+                }
+            }
+        )
+    })
+</script>
+</html>

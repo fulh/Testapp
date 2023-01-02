@@ -223,8 +223,6 @@ class InterfaceInfo(models.Model):
 		return self.case_name
 
 
-
-
 class CaseSuiteRecord(models.Model):
 	id = models.AutoField(primary_key=True)
 	case_suite_record = models.ForeignKey(CaseInfo, on_delete=models.CASCADE, verbose_name='测试用例组')
@@ -253,8 +251,6 @@ class CaseSuiteRecord(models.Model):
 
 	def __str__(self):
 		return str(self.response_code)
-
-
 
 
 class ChartsBug(models.Model):
@@ -390,3 +386,44 @@ class regular(models.Model):
 
 	def __str__(self):
 		return self.regular_name
+
+
+#方向
+class Direction(models.Model):
+	name =models.CharField(verbose_name="书名",max_length=32)
+
+	def __str__(self):
+		return self.name
+	class Meta:
+		db_table = 'Direction'
+
+
+
+class Classification(models.Model):
+	name = models.CharField(verbose_name="分类",max_length=32)
+	direction = models.ManyToManyField(Direction)
+
+	def __str__(self):
+		return self.name
+
+	class Meta:
+		db_table='Classification'
+
+
+class Video(models.Model):
+	status_choice = (
+        (1, '下线'),
+        (2, '上线'),
+    )
+
+	status = models.IntegerField(verbose_name='状态', choices=status_choice, default=1)
+	classification = models.ForeignKey('Classification', verbose_name='分类',null=True, blank=True,on_delete=models.CASCADE)
+	weight = models.IntegerField(verbose_name='权重（按从大到小排列）', default=0)
+	title = models.CharField(verbose_name='标题', max_length=32)
+	summary = models.CharField(verbose_name='简介', max_length=32)
+	create_date = models.DateTimeField(verbose_name='创建日期',auto_now_add=True)
+
+	def __str__(self):
+		return self.title
+	class Meta:
+		db_table='Video'

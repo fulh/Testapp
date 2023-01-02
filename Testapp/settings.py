@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'crispy_forms',
 	'charts',
     'import_export',
+    'rbac'
 ]
 
 MIDDLEWARE = [
@@ -62,6 +63,7 @@ MIDDLEWARE = [
     'middleware.middleware.OnlineUsersMiddleware',
     'middleware.middleware.UrlNumeber',
     'middleware.middleware.OperationLogMiddleware',
+    # 'apps.rbac.middleware.ValidPermission.ValidPermission'
 
 ]
 
@@ -234,3 +236,9 @@ CELERY_RESULT_SERIALIZER = 'json' # 结果序列化方案
 # CELERY_RESULT_BACKEND = 'redis://:zhengbang@10.88.3.165:6379/9' # BACKEND配置，这里使用redis
 #
 # CELERY_RESULT_SERIALIZER = 'json' # 结果序列化方案
+
+
+VALID_LIST = [
+    '/login/',
+    '^/admin/.*',
+]

@@ -1,0 +1,30 @@
+{#{% for menu in menu_dict.values %}#}
+{#    <div class="menu-item">#}
+{#        <div class="menu-title">{{ menu.menu_name }}</div>#}
+{#        <div class="expand sonmenu">#}
+{#            {% for per in menu.children %}#}
+{#                {% if per.active %}#}
+{#                    <a href="{{ per.url }}" class="active">{{ per.title }}</a>#}
+{#                {% else %}#}
+{#                    <a href="{{ per.url }}">{{ per.title }}</a>#}
+{#                {% endif %}#}
+{#            {% endfor %}#}
+{#        </div>#}
+{#    </div>#}
+{#{% endfor %}#}
+<div class="menu">
+{% for menu in menu_dict.values %}
+    <div id="menu_asset" class="menu-item openmenu">
+        <span>{{ menu.menu_name }}</span>
+        <div class="expand sonmenu">
+            {% for per in menu.children %}
+                {% if per.active %}
+                    <a href="{{ per.url }}" class="active">{{ per.title }}</a>
+                {% else %}
+                    <a href="{{ per.url }}">{{ per.title }}</a>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+{% endfor %}
+</div>

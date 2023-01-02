@@ -49,11 +49,14 @@ def create_pic(sender,**kwargs):
         fig.set_size_inches(15.3 , 6)
 
         # bars
-        ax.barh(df.story, df.current_num, left=df.start_num,color=df.color)
-        ax.barh(df.story, df.days_start_to_end, left=df.start_num,color=df.color, alpha=0.8)
+        ax.barh(df.index, df.current_num, left=df.start_num,color=df.color)
+        ax.barh(df.index, df.days_start_to_end, left=df.start_num,color=df.color,alpha=0.5)
+        # ax.barh(df.story, df.current_num+0.1, left=df.start_num, color="#A52A2A")
         # ax.barh(df.story, df.plan_days_start_to_end, left=df.plan_start_num, color=df.color, alpha=0.3)
         # texts
         for idx, row in df.iterrows():
+            print("+++++")
+            print(idx)
             ax.text(row.end_num + 0.1, idx, f"{int(row.Completion_ratio)}%", va='center', alpha=0.8)
             ax.text(row.start_num - 0.1, idx, row.story, va='center', ha='right', alpha=0.8)
 

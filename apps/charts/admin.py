@@ -1,4 +1,4 @@
-import xadmin
+from django.contrib import admin
 from xadmin import views
 from .sql_util import SQLTool
 from xadmin.views.base import CommAdminView
@@ -13,11 +13,12 @@ from charts import sqlfile
 
 
 
+
 class ProgressAdmin(object):
 	"""
 	项目业务中模块中的每个应用的缺陷详细统计
 	"""
-	object_list_template = "test1.html"
+	object_list_template = "charttext.html"
 	model_icon = 'fa fa-line-chart'
 
 	def get_context(self):
@@ -51,6 +52,7 @@ class BarChartsAdmin(object):
 	# list_display = []
 	# 设置需要跳转的页面 index1.html，这个页面需要在template
 	object_list_template = "index1.html"
+	# object_list_template = "bugcharts.html"
 	# 设置图标，这个图标
 	model_icon ='fa fa-bug'
 

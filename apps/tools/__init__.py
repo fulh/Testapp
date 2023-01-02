@@ -74,7 +74,6 @@ def execute(id,dic,regular_result):
 
 		# 正则表达式，根据表达式提取值，赋值给变量名
 		regular_result.update(regular_info(case_id,response))
-		print(regular_result)
 
 
 		# if regular_expression == "开启" and regular_variable is not None:
@@ -132,6 +131,7 @@ def request_case(request_mode,interface_url,request_body,request_head,request_pa
 	return response
 
 
+#通过设置表达式，提取表达式中的变量值
 def regular_info(id,response,regular_parameter=None):
 	parameter = regular.objects.filter(test_id_id=id).values().order_by("-id")
 	variable_dit ={}

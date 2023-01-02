@@ -26,6 +26,8 @@
         <script>
             function test(obj) {
                 location.href = (obj.options[obj.selectedIndex].value);
+                console.log((obj.options[obj.selectedIndex].value))
+                console.log(location.href)
             }
         </script>
 
@@ -33,7 +35,7 @@
             <h5>请选择项目</h5>
         {% else %}
             <div id="projectpic" style="color:#993300;height:625px;border:1px;position:relative;">
-                <img src="/static/media/project.png" style="position:absolute;height:620px;top:0.5;left:0;right:0;bottom:0;margin:auto">
+                <img src="/static/media/project.png" style="position:absolute;height:620px;top:0.5px;left:0;right:0;bottom:0;margin:auto">
             </div>
         {% endif %}
     </div>

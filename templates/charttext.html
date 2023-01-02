@@ -1,0 +1,53 @@
+{# 继承自xadmin中的base_site.html #}
+{% extends 'xadmin/base_site.html' %}
+
+{# 去掉标签栏 #}
+{% block content-nav %}
+
+{% endblock %}
+
+{% load staticfiles %}
+{% block title %}首页{% endblock %}
+
+{% block custom_bread %}
+{% endblock %}
+
+{% block content %}
+
+<!--banner end-->
+<div class ="body-content">
+    <div class = "content-block">
+        <div class="div1">
+            {{bugTrend_bar_charts| safe }}
+        </div>
+        <div class="div2">
+            {{progress_bar_charts| safe }}
+        </div>
+        <div class="div3">
+            {{reproduction_bar_charts| safe }}
+        </div>
+        <div class="div4">
+            {{fattenone_bar_charts| safe }}
+        </div>
+        <div class="div5">
+            {{purchaseAndsale_bar_charts| safe }}
+        </div>
+        <div class="div6">
+            {{purchaseAndsaleapp_bar_charts|safe }}
+        </div>
+        <div class="div7">
+            {{fattenoneapp_bar_charts|safe }}
+        </div>
+        <div class="div8">
+            {{fattentwo_bar_charts|safe }}
+        </div>
+        <div class="div9">
+            {{fattentwoapp_bar_charts|safe }}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block custom_js %}
+<script type="text/javascript" src="{% static 'js/index.js' %}"></script>
+{% endblock %}

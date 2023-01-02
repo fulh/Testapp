@@ -13,19 +13,13 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
+
 from django.urls import path
 from django.conf.urls import url
-import xadmin
 
-from apps.interface import views
+
+from apps.rbac.views import login
 
 urlpatterns = [
-    path('project/', views.test_case, name='test_case'),
-    path('case/', views.case_test2, name='test_case'),
-    path('case_test/', views.index, name='test_case'),
-    path('test/', views.test),
-    # url('casesuite-(?P<direction_id>(\d+))-(?P<classification_id>(\d+)).html$',views.CaseSuiteRecordviwe),
-    url('casesuite-(?P<direction_id>(\d+))-(?P<classification_id>(\d+))-(?P<page>(\d+))',views.CaseSuiteRecordviwe),
-    url('fu/(\d+)',views.fu),
+    path('login/', login.as_view()),
 ]

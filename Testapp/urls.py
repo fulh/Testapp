@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path,include
 from django.conf import settings
 from django.conf.urls.static import static
+from apps.user import views
 import xadmin
 
 
@@ -25,6 +26,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('xadmin/', xadmin.site.urls),
     path('interface/', include('interface.urls')),
+    path('rbac/', include('rbac.urls')),
+    path('login/', views.loginauth.as_view()),
+    path('index/', views.index),
+    path('logout/', views.logout)
 ]
 
 

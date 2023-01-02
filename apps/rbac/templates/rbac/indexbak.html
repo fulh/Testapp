@@ -1,0 +1,23 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>login</title>
+</head>
+
+<body>
+        {% load menu_tag %}
+        <div class="menu">
+             {% get_menu request %}
+        </div>
+
+{% for user in roles %}
+    {{ user.name }}
+{% endfor %}
+{% for permission in permission_list %}
+    {{ permission.title }}
+    {{ permission.url }}
+{% endfor %}
+</body>
+</html>

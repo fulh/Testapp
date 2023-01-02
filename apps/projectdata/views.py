@@ -1,7 +1,9 @@
 from django.shortcuts import render
 from xadmin.views import CommAdminView,BaseAdminView
 from .models import projectdata,projectpic
+
 import django.dispatch
+
 work_done = django.dispatch.Signal(providing_args=['id'])
 
 class TestView(CommAdminView):
@@ -25,3 +27,7 @@ class TestView(CommAdminView):
                 {"story_bar": story, "pic": 1}
             )
         return render(request, 'test.html', context)  # 最后指定自定义的template模板，并返回context
+
+
+
+

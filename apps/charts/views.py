@@ -157,3 +157,6 @@ class ModuleTestView(APIView):
 # class LiquidView(APIView):
 #     def get(self, request, *args, **kwargs):
 #         return JsonResponse(json.loads(liquid_test))
+
+
+from django.core.handlers.wsgi import WSGIRequest

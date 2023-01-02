@@ -11,6 +11,7 @@ from django.shortcuts import render, HttpResponse
 from django.core.cache import caches
 
 from django.contrib.auth.models import User
+from user.models import UserProfile
 from user.models import OnlineUsers
 from apps.tools.utils import get_request_browser, get_request_os, get_request_ip,get_ip_address
 
@@ -129,7 +130,6 @@ class OnlineUsersMiddleware(MiddlewareMixin):
         online_info = {'ip': request_ip, 'browser': get_request_browser(request),
                        'os': get_request_os(request), 'last_time': last_time}
         if request.user.is_authenticated:
-
             if conn.exists(f'online_user_{request.user.username}_{request_ip}'):
                 conn.hset(f'online_user_{request.user.username}_{request_ip}', 'last_time', last_time)
             else:
@@ -137,14 +137,14 @@ class OnlineUsersMiddleware(MiddlewareMixin):
                 if not OnlineUsers.objects.filter(user=request.user, ip=request_ip).exists():
                     OnlineUsers.objects.create(**{'user': request.user, 'ip': request_ip,'name':request.user.username})
             # key过期后, 使用redis空间通知, 使用户下线
-            conn.expire(f'online_user_{request.user.username}_{request_ip}', 2 * 60)
+            conn.expire(f'online_user_{request.user.username}_{request_ip}', 2 * 600)
         else:
             if conn.exists(f'online_user_anonyname_{request_ip}'):
                 conn.hset(f'online_user_anonyname_{request_ip}', 'last_time', last_time)
             else:
                 conn.hmset(f'online_user_anonyname_{request_ip}', online_info)
                 if not OnlineUsers.objects.filter(name="anonyname", ip=request_ip).exists():
-                    id= User.objects.get(username="anonyname")
+                    id= UserProfile.objects.get(username="anonyname")
                     OnlineUsers.objects.create(**{'name': "anonyname", 'ip': request_ip,'user':id})
             conn.expire(f'online_user_anonyname__{request_ip}', 2 * 60)
         return response

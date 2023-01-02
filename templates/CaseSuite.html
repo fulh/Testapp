@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/static/plugins/bootstrap/css/bootstrap.min.css">
+    <style>
+        .content{
+            margin-top: 20px;
+            margin-left: 15px;
+            margin-right: 15px;
+        }
+        .mypage{
+            {#margin: 15px 2px;#}
+            border: 1px solid dimgray;
+            border-radius: 15px;
+            margin-top: 15px;
+            margin-left: 25px;
+            margin-right: 25px;
+            margin-bottom: 15px;
+            padding-top: 12px;
+            padding-bottom: 10px;
+
+        }
+        .searchresult{
+            min-height: 500px;
+        }
+        .search{
+            margin: 10px 2px;
+            border: 1px solid dimgray;
+            padding: 25px;
+            border-radius: 15px;
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+        .search a{
+            display: inline-block;
+            padding: 5px 8px;
+            border: 1px solid #dddddd;
+            margin-top: 5px;
+        }
+        .search a.active {
+            background-color: coral;
+            color: white;
+        }
+        .panel-default{
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+<div class="content">
+    <div class="search" style="background-image：linear-gradient(to bottom, #ffffff 0%, #f8f8f8 100%)">
+        <div>
+            {% if kwargs.direction_id == 0 %}
+                <a class="active btn btn-secondary" href="/interface/casesuite-0-{{ kwargs.classification_id }}-{{ kwargs.page }}">全部</a>
+            {% else %}
+                <a class="btn btn-secondary" href="/interface/casesuite-0-{{ kwargs.classification_id }}-{{ kwargs.page }}">全部</a>
+            {% endif %}
+            {% for Direction in case_info %}
+                {% if Direction.id == kwargs.direction_id %}
+                    <a class="active btn btn-secondary" href="/interface/casesuite-{{  Direction.id }}-{{ kwargs.classification_id }}-{{ kwargs.page }}">{{ Direction.name }}</a>
+                {% else %}
+                    <a class="btn btn-secondary" href="/interface/casesuite-{{  Direction.id }}-{{ kwargs.classification_id }}-{{ kwargs.page }}">{{ Direction.name }}</a>
+                {% endif %}
+
+            {% endfor %}
+        </div>
+        <hr class="dropdown-divider">
+        <div>
+            {% if kwargs.classification_id == 0 %}
+                <a class="active btn btn-secondary" href="/interface/casesuite-{{  kwargs.direction_id }}-0-{{ kwargs.page }}">全部</a>
+            {% else %}
+                <a  class="btn btn-secondary" href="/interface/casesuite-{{  kwargs.direction_id }}-0-{{ kwargs.page }}">全部</a>
+            {% endif %}
+            {% for Classification_name in Classification  %}
+                {% if Classification_name.id == kwargs.classification_id %}
+                    <a class="active btn btn-secondary" href="/interface/casesuite-{{  kwargs.direction_id }}-{{ Classification_name.id }}-{{ kwargs.page }}">{{ Classification_name.name }}</a>
+                {% else %}
+                    <a class="btn btn-secondary" href="/interface/casesuite-{{  kwargs.direction_id }}-{{ Classification_name.id }}-{{ kwargs.page }}">{{ Classification_name.name }}</a>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+
+    <div class="panel panel-default search searchresult" style="display: block">
+      <!-- Default panel contents -->
+{#        <div>#}
+{#            <div style="display: inline-block;float:left;position:absolute">#}
+{#                <button type="button" class="btn btn-primary">全选</button>#}
+{#                <button type="button" class="btn btn-primary">反选</button>#}
+{#                <button type="button" class="btn btn-primary">取消</button>#}
+{#            </div>#}
+{#        </div>#}
+      <div class="panel-heading " style="margin-bottom: 5px">
+          <div >
+              <button type="button" class="btn btn-primary" onclick="selectAll()">全选</button>
+              <button type="button" class="btn btn-primary" onclick="Cancel()">取消</button>
+              <button type="button" class="btn btn-primary" onclick="reverse()">反选</button>
+
+              <button type="button" class="btn btn-primary" onclick="reverse() " style="float: right">删除</button>
+              <button type="button" class="btn btn-primary" onclick="reverse()" style=" margin-right:20px;float: right">新增</button>
+          </div>
+      </div>
+      <div class="panel-heading ">
+          <div>
+              <span> 结果列表</span>
+              <table class="table">
+          <thead>
+            <tr>
+                <th>#</th>
+                {% for k,v in dic_thead.items%}
+                    <th>{{ v }}</th>
+                {% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+                {% for video in video %}
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>{{ video.id }}</td>
+{#                        <td>{{ video.status }}</td>#}
+                        <td>{{ video.classification }}</td>
+{#                        <td>{{ video.weight }}</td>#}
+                        <td>{{ video.title }}</td>
+                        <td>{{ video.summary }}</td>
+                        <td>{{ video.create_date }}</td>
+                    </tr>
+                 {% endfor %}
+            </tr>
+          </tbody>
+
+      </table>
+          </div>
+      </div>
+    </div>
+{#    <div class="mypage">#}
+        <nav aria-label="Page">
+          <ul class="pagination pagination-lg" style="display:table;margin:0 auto;">
+                {{ case |safe }}
+            </ul>
+        </nav>
+{#    </div>#}
+
+
+</div>
+<script>
+    function selectAll() {
+
+        var inputs=document.getElementsByTagName("input");
+
+        for (var i=0;i<inputs.length;i++){
+            var input=inputs[i]
+            input.checked=true;
+        }
+
+    }
+
+    function Cancel() {
+         var inputs=document.getElementsByTagName("input");
+
+        for (var i=0;i<inputs.length;i++){
+            var input=inputs[i]
+            input.checked=false;
+        }
+
+    }
+
+
+    function reverse() {
+        var inputs=document.getElementsByTagName("input");
+        for (var i=0;i<inputs.length;i++){
+            var input=inputs[i];
+             input.checked=!input.checked;
+        }
+    }
+</script>
+</script>
+
+</body>
+</html>

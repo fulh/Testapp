@@ -25,13 +25,16 @@ from django.db.transaction import (
 
 from charts.models import CaseapiCharts, BarCharts, Progress
 from .models import Pathurl, ProjectInfo, CaseInfo, InterfaceInfo, CaseSuiteRecord, PerformanceInfo, \
-    PerformanceResultInfo,regular
+    PerformanceResultInfo, regular,Direction,Classification,Video
 from user.models import UserProfile, IpAddre
 from projectdata.models import projectdata
 from tools import rep_expr, execute
 
 from django.core.exceptions import ImproperlyConfigured, ValidationError
+
 logger = logging.getLogger(__name__)
+
+regular_result = {}
 
 class BaseSetting(object):
     """xadmin的基本配置"""
@@ -98,16 +101,25 @@ class GlobalSettings(object):
                  {'title': '项目进度列表', 'icon': 'fa fa-thumb-tack', 'url': self.get_model_url(projectdata, 'changelist')},
                  {'title': '项目进度图表', 'icon': 'fa fa-cny', 'url': '/xadmin/test_view'},
              ]
-             }
+             },
+            {'title': "测试组合搜索",
+             'icon': 'fa fa-bars',
+             'menus': [
+                 {'title': '分类', 'icon': 'fa fa-arrows-alt', 'url': self.get_model_url(Direction, 'changelist')},
+                 {'title': '方向', 'icon': 'fa fa-asterisk', 'url': self.get_model_url(Classification, 'changelist')},
+                 {'title': '视频', 'icon': 'fa fa-quora', 'url': self.get_model_url(Video, 'changelist')},
+             ]
+             },
+
 
         ]
 
 
 xadmin.site.register(views.CommAdminView, GlobalSettings)
 
+
 # 在Action中添加复制动作
 class CopyAction(BaseActionView):
-
     action_name = "copy_data"
     description = "复制所选的 %(verbose_name_plural)s"
     model_perm = 'change'
@@ -121,22 +133,22 @@ class CopyAction(BaseActionView):
         messages.success(self.request, "复制成功")
         return None
 
+
 # 根据项目来来执行测试用例
 class ProjectdoAction(BaseActionView):
-
     action_name = "cases_do_data"
     description = "所选的 %(verbose_name_plural)s进行测试"
     model_perm = 'change'
     icon = 'fa fa-check'
 
     def do_action(self, queryset):
-        global regular_result
-        regular_result = {}
+        # global regular_result
+        # regular_result = {}
 
         # 循环获取queryset 对象中的列表
         for a in queryset.values():
             id = a['id']
-            data_object = InterfaceInfo.objects.filter(case_group__belong_project_id = id).values().order_by("id")
+            data_object = InterfaceInfo.objects.filter(case_group__belong_project_id=id).values().order_by("id")
             case_id = []
             for caseid in data_object:
                 case_id.append(caseid['id'])
@@ -146,7 +158,6 @@ class ProjectdoAction(BaseActionView):
             CaseSuiteRecord.objects.filter(test_case__in=case_id).update(**new)
             # 把数据转换成list
             data_list = list(data_object)
-            # print(data_list)
             execute(id, data_list, regular_result)
         messages.success(self.request, "测试用例组执行")
         return None
@@ -154,7 +165,6 @@ class ProjectdoAction(BaseActionView):
 
 # 根据用例组来执行测试用例
 class CaseSuitedoAction(BaseActionView):
-
     action_name = "cases_do_data"
     description = "所选的 %(verbose_name_plural)s进行测试"
     model_perm = 'change'
@@ -162,7 +172,7 @@ class CaseSuitedoAction(BaseActionView):
 
     def do_action(self, queryset):
         global regular_result
-        regular_result = {}
+        # regular_result = {}
 
         # 循环获取queryset 对象中的列表
         for a in queryset.values():
@@ -179,9 +189,9 @@ class CaseSuitedoAction(BaseActionView):
         messages.success(self.request, "测试用例组执行")
         return None
 
+
 # 在用例列表中执行测试用例
 class CasedoAction(BaseActionView):
-
     action_name = "cases_do_data"
     description = "所选的 %(verbose_name_plural)s进行测试"
     model_perm = 'change'
@@ -192,7 +202,7 @@ class CasedoAction(BaseActionView):
         定义全局变量，把每次获取的变量存在在全局变量字典中，
         """
         global regular_result
-        regular_result = {}
+        # regular_result = {}
 
         # 循环获取queryset 对象中的列表
         idlist = []
@@ -210,9 +220,9 @@ class CasedoAction(BaseActionView):
         messages.success(self.request, "测试用例组执行")
         return None
 
+
 # 根据Jmeter脚本列表执行jmeter性能脚本
 class jmeteraction(BaseActionView):
-
     action_name = "cases_do_data"
     description = "所选的 %(verbose_name_plural)s进行压力测试"
     model_perm = 'change'
@@ -275,7 +285,6 @@ class PathurlAdmin(object):
         'url_path'
     )
 
-
 class ProjectInfoAdmin(object):
     model_icon = 'fa fa-asterisk'
 
@@ -303,12 +312,11 @@ class ProjectInfoAdmin(object):
     list_editable = ['product_name']
     # raw_id_fields = ('url_name',)
     list_per_page = 10
-    actions = [ProjectdoAction,]
-
+    actions = [ProjectdoAction, ]
 
 class CaseInfoAdmin(object):
     model_icon = 'fa fa-quora'
-    exclude = ['is_delete','create_author']
+    exclude = ['is_delete', 'create_author']
     list_display = [
         'id',
         'belong_project',
@@ -328,12 +336,12 @@ class CaseInfoAdmin(object):
     list_editable = ['case_group_name']
     list_per_page = 10
 
-
     def clease_sun(self, obj):
-    	# 通过反向查询出用例数
+        # 通过反向查询出用例数
         sum = obj.groupsfu.all().count()
-        if sum>0:
-            button_html = '<a  style="color: red" href="/xadmin/interface/interfaceinfo/?_p_case_group__id__exact=%s">%s</a>' % (obj.id, obj.groupsfu.all().count())
+        if sum > 0:
+            button_html = '<a  style="color: red" href="/xadmin/interface/interfaceinfo/?_p_case_group__id__exact=%s">%s</a>' % (
+            obj.id, obj.groupsfu.all().count())
         else:
             button_html = '<span style="color: black">%s</span>' % (obj.groupsfu.all().count())
         return format_html(button_html)
@@ -376,18 +384,19 @@ class CaseInfoAdmin(object):
             execute(a['id'], data_list, regular_result)
 
     make_case.short_description = "选择执行测试用例"
-    actions = [CopyAction, make_case, CaseSuitedoAction]
+    # actions = [CopyAction, make_case, CaseSuitedoAction]
+    actions = [CopyAction, CaseSuitedoAction]
 
-
-    def delete_models(self,request):
+    def delete_models(self, request):
         for obj in request:
             print("admin delete")
             self.log('delete', '', obj)
-            obj.is_delete=0
+            obj.is_delete = 0
             obj.save()
+
     #
     def queryset(self):
-        qs = super(CaseInfoAdmin,self).queryset()
+        qs = super(CaseInfoAdmin, self).queryset()
         print(self.request.user)
         if self.request.user.is_superuser:
             return qs.filter(is_delete=True)
@@ -399,13 +408,15 @@ class CaseInfoAdmin(object):
         obj.create_author = self.request.user
         obj.save()
 
-from import_export import resources,widgets
+
+from import_export import resources, widgets
 from django.apps import apps
 from import_export.fields import Field
 from import_export.widgets import ForeignKeyWidget
 from import_export.results import Error, Result, RowResult
 from django.utils.encoding import force_str
 from copy import deepcopy
+
 
 class InterfaceInfoResource(resources.ModelResource):
     id = Field(attribute='id', column_name="ID")
@@ -507,10 +518,10 @@ class InterfaceInfoResource(resources.ModelResource):
     #
     #     return instance
 
-
     """
     系统在执行InterfaceInfoResource的时候，先初始化其中的数据，apps.get_model('interface', 'InterfaceInfo')._meta.fields获取到modles 中的所有字段
     """
+
     def __init__(self):
         super(InterfaceInfoResource, self).__init__()
         field_list = apps.get_model('interface', 'InterfaceInfo')._meta.fields
@@ -520,27 +531,24 @@ class InterfaceInfoResource(resources.ModelResource):
         for i in field_list:
             self.verbose_name_dict[i.name] = i.verbose_name
 
-
     """
     导入的时候，在页面显示的都是modles 中的字段名称，没有显示verbose_name 中的名字
     通过重写field_from_django_field 函数，把column_name重写
     """
+
     @classmethod
     def field_from_django_field(cls, field_name, django_field, readonly):
         FieldWidget = cls.widget_from_django_field(django_field)
         widget_kwargs = cls.widget_kwargs_for_field(field_name)
         field = cls.DEFAULT_RESOURCE_FIELD(
             attribute=field_name,
-             # 重写column_name
+            # 重写column_name
             column_name=django_field.verbose_name,
             widget=FieldWidget(**widget_kwargs),
             readonly=readonly,
             default=django_field.default,
         )
         return field
-
-
-
 
     class Meta:
         model = InterfaceInfo
@@ -570,9 +578,9 @@ class InterfaceInfoResource(resources.ModelResource):
             'create_author',
         )
 
+
 # 列表页面，添加复制动作与批量修改动作
 class InterfaceInfoAdmin(object):
-
     model = InterfaceInfo
     extra = 0
     # 提供1个足够的选项行，也可以提供N个
@@ -580,7 +588,6 @@ class InterfaceInfoAdmin(object):
     model_icon = 'fa fa-suitcase'
     # 在后台admin页面不需要显示关联项
     use_related_menu = False
-
 
     # 折叠
     def update_interface_info(self, case_id, field, value):
@@ -648,7 +655,7 @@ class InterfaceInfoAdmin(object):
     # 可以通过搜索框搜索的字段名称
     search_fields = ("case_name",)
     # 可以进行过滤操作的列
-    list_filter = ['case_group',"create_time"]
+    list_filter = ['case_group', "create_time"]
     list_display_links = ('id', 'case_group', 'case_name')
     show_detail_fields = ['case_name']
     list_editable = ['case_name']
@@ -875,14 +882,37 @@ class regularAdmin(object):
 
     ]
 
+class DirectionAdmin(object):
+    list_display = [
+        'id',
+        'name',
+    ]
+
+class ClassificationAdmin(object):
+    list_display = [
+        'id',
+        'name',
+        'direction',
+    ]
+
+class VideoAdmin(object):
+    list_display = [
+        'id',
+        'status',
+        'classification',
+        'title',
+        'summary',
+    ]
+
 
 
 from projectdata.views import TestView
+
 xadmin.site.register_view(r'test_view/$', TestView, name='for_test')
 
-
-
-
+xadmin.site.register(Direction, DirectionAdmin)
+xadmin.site.register(Classification, ClassificationAdmin)
+xadmin.site.register(Video, VideoAdmin)
 
 
 

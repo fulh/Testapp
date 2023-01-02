@@ -17,3 +17,5 @@ def strDict(sourcelist,resultlist):
 				pass
 	return a_active
 
+
+
