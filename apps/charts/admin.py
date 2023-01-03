@@ -1,3 +1,4 @@
+import xadmin
 from django.contrib import admin
 from xadmin import views
 from .sql_util import SQLTool
